@@ -1,17 +1,12 @@
-pub mod camera;
-
 use bevy::prelude::*;
-use floating_origin::{FloatingOriginCamera, FloatingOriginSettings, GridPosition};
+use floating_origin::{FloatingOriginCamera, GridPosition};
 
 fn main() {
     App::new()
         .add_plugins_with(DefaultPlugins, |group| {
             group.disable::<bevy::transform::TransformPlugin>() // Disable built-in transform plugin
         })
-        .add_plugin(floating_origin::FloatingOriginPlugin::<i64>::default())
-        .add_plugin(camera::CameraControllerPlugin)
-        .insert_resource(Msaa { samples: 4 })
-        .insert_resource(FloatingOriginSettings::new(1.0, 0.1))
+        .add_plugin(floating_origin::FloatingOriginPlugin::<i32>::default())
         .add_startup_system(setup)
         .add_system(rotator_system)
         .run()
@@ -48,7 +43,7 @@ fn setup(
             transform: Transform::from_xyz(0.0, 0.0, 1.0),
             ..default()
         })
-        .insert(GridPosition::<i64>::default())
+        .insert(GridPosition::<i32>::default())
         .insert(Rotator)
         .with_children(|parent| {
             // child cube
@@ -65,14 +60,13 @@ fn setup(
             transform: Transform::from_xyz(4.0, 5.0, -4.0),
             ..default()
         })
-        .insert(GridPosition::<i64>::default());
+        .insert(GridPosition::<i32>::default());
     // camera
     commands
         .spawn_bundle(Camera3dBundle {
             transform: Transform::from_xyz(5.0, 10.0, 10.0).looking_at(Vec3::ZERO, Vec3::Y),
             ..default()
         })
-        .insert(GridPosition::<i64>::default())
-        .insert(FloatingOriginCamera)
-        .insert(camera::CameraController);
+        .insert(GridPosition::<i32>::default())
+        .insert(FloatingOriginCamera);
 }

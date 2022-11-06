@@ -2377,6 +2377,10 @@ dependencies = [
 [[package]]
 name = "pew"
 version = "0.1.0"
+dependencies = [
+ "bevy",
+ "floating_origin",
+]
 
 [[package]]
 name = "pin-project-lite"
