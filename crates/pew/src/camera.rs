@@ -24,9 +24,9 @@ pub fn camera_controller(
     let mut camera_transform = camera.single_mut();
     let distance = time.delta_seconds()
         * if keyboard.pressed(KeyCode::LShift) {
-            10_000_000.0
+            1000_000_000.0
         } else {
-            100_000.0
+            1_000.0
         };
     let mut translation = Vec3::ZERO;
     if keyboard.pressed(KeyCode::W) {

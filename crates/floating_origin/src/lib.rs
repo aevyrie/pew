@@ -45,20 +45,28 @@ impl FloatingOriginSettings {
         }
     }
 
-    pub fn precise_position<P: Precision>(&self, input: DVec3) -> (GridPosition<P>, Transform) {
+    pub fn precise_translation<P: Precision>(&self, input: Vec3) -> (GridPosition<P>, Vec3) {
         let l = self.grid_cell_edge_length as f64;
-        let DVec3 { x, y, z } = input;
-        let (i, t_x) = ((x / l).floor(), x % l);
-        let (j, t_y) = ((y / l).floor(), y % l);
-        let (k, t_z) = ((z / l).floor(), z % l);
+        let DVec3 { x, y, z } = input.as_dvec3();
+
+        if input.abs().max_element() < self.distance_limit {
+            return (GridPosition::default(), input);
+        }
+
+        let x_r = (x / l).round();
+        let y_r = (y / l).round();
+        let z_r = (z / l).round();
+        let t_x = x - x_r * l;
+        let t_y = y - y_r * l;
+        let t_z = z - z_r * l;
 
         (
             GridPosition {
-                x: P::from_f64(i),
-                y: P::from_f64(j),
-                z: P::from_f64(k),
+                x: P::from_f64(x_r),
+                y: P::from_f64(y_r),
+                z: P::from_f64(z_r),
             },
-            Transform::from_xyz(t_x as f32, t_y as f32, t_z as f32),
+            Vec3::new(t_x as f32, t_y as f32, t_z as f32),
         )
     }
 }
@@ -146,8 +154,8 @@ impl<P: Precision> Plugin for FloatingOriginPlugin<P> {
             .register_type::<Transform>()
             .register_type::<GlobalTransform>()
             .register_type::<GridPosition<P>>()
-            // .add_startup_system(spawn_debug_bounds)
-            // .add_system(update_debug_bounds)
+            .add_startup_system(spawn_debug_bounds)
+            .add_system(update_debug_bounds)
             // add transform systems to startup so the first update is "correct"
             .add_startup_system_to_stage(StartupStage::PostStartup, grid_recentering::<P>)
             .add_startup_system_to_stage(
@@ -238,33 +246,10 @@ pub fn grid_recentering<P: Precision>(
     mut query: Query<(&mut GridPosition<P>, &mut Transform), (Changed<Transform>, Without<Parent>)>,
 ) {
     query.par_for_each_mut(1024, |(mut grid_pos, mut transform)| {
-        let limit = settings.distance_limit;
-        let edge_length = settings.grid_cell_edge_length;
-
-        while transform.as_ref().translation.x > limit {
-            grid_pos.x = grid_pos.x.wrapping_add(P::one());
-            transform.translation.x -= edge_length;
-        }
-        while transform.as_ref().translation.y > limit {
-            grid_pos.y = grid_pos.y.wrapping_add(P::one());
-            transform.translation.y -= edge_length;
-        }
-        while transform.as_ref().translation.z > limit {
-            grid_pos.z = grid_pos.z.wrapping_add(P::one());
-            transform.translation.z -= edge_length;
-        }
-        while transform.as_ref().translation.x < -limit {
-            grid_pos.x = grid_pos.x.wrapping_sub(P::one());
-            transform.translation.x += edge_length;
-        }
-        while transform.as_ref().translation.y < -limit {
-            grid_pos.y = grid_pos.y.wrapping_sub(P::one());
-            transform.translation.y += edge_length;
-        }
-        while transform.as_ref().translation.z < -limit {
-            grid_pos.z = grid_pos.z.wrapping_sub(P::one());
-            transform.translation.z += edge_length;
-        }
+        let (grid_delta, translation) =
+            settings.precise_translation(transform.as_ref().translation);
+        *grid_pos = *grid_pos + grid_delta;
+        transform.translation = translation;
     });
 }
 
