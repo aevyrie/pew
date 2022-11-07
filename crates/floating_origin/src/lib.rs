@@ -4,11 +4,14 @@
 //! When an object exceeds its boundary,
 
 use bevy::{math::DVec3, prelude::*, transform::TransformSystem};
+use bevy_inspector_egui::Inspectable;
+use bevy_polyline::prelude::{Polyline, PolylineBundle, PolylineMaterial};
 use std::marker::PhantomData;
 
 pub mod precision;
 use precision::*;
 
+#[derive(Reflect, Inspectable)]
 pub struct FloatingOriginSettings {
     grid_cell_edge_length: f32,
     distance_limit: f32,
@@ -40,6 +43,23 @@ impl FloatingOriginSettings {
             y: pos.y.as_f64() as f32 * self.grid_cell_edge_length + transform.translation.y,
             z: pos.z.as_f64() as f32 * self.grid_cell_edge_length + transform.translation.z,
         }
+    }
+
+    pub fn precise_position<P: Precision>(&self, input: DVec3) -> (GridPosition<P>, Transform) {
+        let l = self.grid_cell_edge_length as f64;
+        let DVec3 { x, y, z } = input;
+        let (i, t_x) = ((x / l).floor(), x % l);
+        let (j, t_y) = ((y / l).floor(), y % l);
+        let (k, t_z) = ((z / l).floor(), z % l);
+
+        (
+            GridPosition {
+                x: P::from_f64(i),
+                y: P::from_f64(j),
+                z: P::from_f64(k),
+            },
+            Transform::from_xyz(t_x as f32, t_y as f32, t_z as f32),
+        )
     }
 }
 
@@ -121,10 +141,13 @@ pub struct FloatingOriginCamera;
 pub struct FloatingOriginPlugin<P: Precision>(PhantomData<P>);
 impl<P: Precision> Plugin for FloatingOriginPlugin<P> {
     fn build(&self, app: &mut App) {
-        app.init_resource::<FloatingOriginSettings>()
+        app.add_plugin(bevy_polyline::PolylinePlugin)
+            .init_resource::<FloatingOriginSettings>()
             .register_type::<Transform>()
             .register_type::<GlobalTransform>()
             .register_type::<GridPosition<P>>()
+            // .add_startup_system(spawn_debug_bounds)
+            // .add_system(update_debug_bounds)
             // add transform systems to startup so the first update is "correct"
             .add_startup_system_to_stage(StartupStage::PostStartup, grid_recentering::<P>)
             .add_startup_system_to_stage(
@@ -143,11 +166,78 @@ impl<P: Precision> Plugin for FloatingOriginPlugin<P> {
     }
 }
 
+#[derive(Component)]
+pub struct DebugBounds;
+
+pub fn spawn_debug_bounds(mut commands: Commands) {
+    commands.spawn().insert(DebugBounds);
+}
+
+pub fn update_debug_bounds(
+    settings: Res<FloatingOriginSettings>,
+    debug_cube: Query<Entity, With<DebugBounds>>,
+    mut commands: Commands,
+    mut polyline_materials: ResMut<Assets<PolylineMaterial>>,
+    mut polylines: ResMut<Assets<Polyline>>,
+) {
+    if !settings.is_changed() {
+        return;
+    }
+
+    let s = settings.grid_cell_edge_length / 2.0;
+
+    /*
+        (2)-----(3)               Y
+         | \     | \              |
+         |  (1)-----(0) MAX       o---X
+         |   |   |   |             \
+    MIN (6)--|--(7)  |              Z
+           \ |     \ |
+            (5)-----(4)
+     */
+
+    let indices = vec![
+        0, 1, 1, 2, 2, 3, 3, 0, // Top ring
+        4, 5, 5, 6, 6, 7, 7, 4, // Bottom ring
+        0, 4, 8, 1, 5, 8, 2, 6, 8, 3, 7, // Verticals (8's are NaNs)
+    ];
+
+    let vertices = [
+        Vec3::new(s, s, s),
+        Vec3::new(-s, s, s),
+        Vec3::new(-s, s, -s),
+        Vec3::new(s, s, -s),
+        Vec3::new(s, -s, s),
+        Vec3::new(-s, -s, s),
+        Vec3::new(-s, -s, -s),
+        Vec3::new(s, -s, -s),
+        Vec3::NAN,
+    ];
+
+    commands
+        .entity(debug_cube.single())
+        .insert_bundle(PolylineBundle {
+            polyline: polylines.add(Polyline {
+                vertices: indices.iter().map(|&i| vertices[i]).collect(),
+                ..Default::default()
+            }),
+            material: polyline_materials.add(PolylineMaterial {
+                width: 3.0,
+                color: Color::RED,
+                perspective: false,
+                ..Default::default()
+            }),
+            ..Default::default()
+        });
+}
+
+/// If an entity's transform becomes larger than the specified limit, it is relocated to the next
+/// grid cell to reduce the size of the transform.
 pub fn grid_recentering<P: Precision>(
     settings: Res<FloatingOriginSettings>,
     mut query: Query<(&mut GridPosition<P>, &mut Transform), (Changed<Transform>, Without<Parent>)>,
 ) {
-    query.par_for_each_mut(1, |(mut grid_pos, mut transform)| {
+    query.par_for_each_mut(1024, |(mut grid_pos, mut transform)| {
         let limit = settings.distance_limit;
         let edge_length = settings.grid_cell_edge_length;
 
@@ -182,7 +272,7 @@ pub fn grid_recentering<P: Precision>(
 /// [`GridPosition`] components.
 pub fn transform_propagate_system<P: Precision>(
     origin_settings: Res<FloatingOriginSettings>,
-    mut camera: Query<&GridPosition<P>, With<FloatingOriginCamera>>,
+    mut camera: Query<(&GridPosition<P>, Changed<GridPosition<P>>), With<FloatingOriginCamera>>,
     mut root_query: Query<
         (
             Option<(&Children, Changed<Children>)>,
@@ -203,7 +293,7 @@ pub fn transform_propagate_system<P: Precision>(
     )>,
     children_query: Query<(&Children, Changed<Children>), (With<Parent>, With<GlobalTransform>)>,
 ) {
-    let cam_grid_pos = camera.single_mut();
+    let (cam_grid_pos, cam_grid_pos_changed) = camera.single_mut();
 
     for (
         children,
@@ -215,8 +305,8 @@ pub fn transform_propagate_system<P: Precision>(
         entity,
     ) in root_query.iter_mut()
     {
-        let mut changed = transform_changed;
-        if transform_changed || grid_pos_changed {
+        let mut changed = transform_changed || cam_grid_pos_changed;
+        if transform_changed || grid_pos_changed || cam_grid_pos_changed {
             let relative_grid = entity_grid_pos - cam_grid_pos;
             let new_transform = transform
                 .clone()

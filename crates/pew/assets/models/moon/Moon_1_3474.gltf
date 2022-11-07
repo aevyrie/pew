@@ -1,0 +1,125 @@
+{
+  "asset": {
+    "generator": "Khronos Blender glTF 2.0 I/O",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "Cube.008"
+    }
+  ],
+  "materials": [
+    {
+      "name": "Default OBJ.005",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0,
+          "texCoord": 0
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.8999999761581421
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Cube.001",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "source": 0
+    }
+  ],
+  "images": [
+    {
+      "name": "moon_diff.jpg",
+      "uri": "Moon_1_3474_img0.png"
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 2034,
+      "max": [
+        500.0000305175781,
+        499.3760070800781,
+        500.0000305175781
+      ],
+      "min": [
+        -500.0000305175781,
+        -499.3760070800781,
+        -500.0000305175781
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 2034,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 2034,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 9216,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 24408,
+      "byteOffset": 0
+    },
+    {
+      "buffer": 0,
+      "byteLength": 24408,
+      "byteOffset": 24408
+    },
+    {
+      "buffer": 0,
+      "byteLength": 16272,
+      "byteOffset": 48816
+    },
+    {
+      "buffer": 0,
+      "byteLength": 18432,
+      "byteOffset": 65088
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "Moon_1_3474_data.bin",
+      "byteLength": 83520
+    }
+  ]
+}
