@@ -11,6 +11,35 @@ use std::marker::PhantomData;
 pub mod precision;
 use precision::*;
 
+#[derive(Default)]
+pub struct FloatingOriginPlugin<P: Precision>(PhantomData<P>);
+impl<P: Precision> Plugin for FloatingOriginPlugin<P> {
+    fn build(&self, app: &mut App) {
+        app.add_plugin(bevy_polyline::PolylinePlugin)
+            .init_resource::<FloatingOriginSettings>()
+            .register_type::<Transform>()
+            .register_type::<GlobalTransform>()
+            .register_type::<GridPosition<P>>()
+            .add_startup_system(spawn_debug_bounds)
+            // .add_system(update_debug_bounds)
+            // add transform systems to startup so the first update is "correct"
+            .add_startup_system_to_stage(StartupStage::PostStartup, grid_recentering::<P>)
+            .add_startup_system_to_stage(
+                StartupStage::PostStartup,
+                transform_propagate_system::<P>
+                    .label(TransformSystem::TransformPropagate)
+                    .after(grid_recentering::<P>),
+            )
+            .add_system_to_stage(CoreStage::PostUpdate, grid_recentering::<P>)
+            .add_system_to_stage(
+                CoreStage::PostUpdate,
+                transform_propagate_system::<P>
+                    .label(TransformSystem::TransformPropagate)
+                    .after(grid_recentering::<P>),
+            );
+    }
+}
+
 #[derive(Reflect, Inspectable)]
 pub struct FloatingOriginSettings {
     grid_cell_edge_length: f32,
@@ -144,35 +173,6 @@ impl<P: Precision> std::ops::Sub for &GridPosition<P> {
 
 #[derive(Component)]
 pub struct FloatingOriginCamera;
-
-#[derive(Default)]
-pub struct FloatingOriginPlugin<P: Precision>(PhantomData<P>);
-impl<P: Precision> Plugin for FloatingOriginPlugin<P> {
-    fn build(&self, app: &mut App) {
-        app.add_plugin(bevy_polyline::PolylinePlugin)
-            .init_resource::<FloatingOriginSettings>()
-            .register_type::<Transform>()
-            .register_type::<GlobalTransform>()
-            .register_type::<GridPosition<P>>()
-            .add_startup_system(spawn_debug_bounds)
-            .add_system(update_debug_bounds)
-            // add transform systems to startup so the first update is "correct"
-            .add_startup_system_to_stage(StartupStage::PostStartup, grid_recentering::<P>)
-            .add_startup_system_to_stage(
-                StartupStage::PostStartup,
-                transform_propagate_system::<P>
-                    .label(TransformSystem::TransformPropagate)
-                    .after(grid_recentering::<P>),
-            )
-            .add_system_to_stage(CoreStage::PostUpdate, grid_recentering::<P>)
-            .add_system_to_stage(
-                CoreStage::PostUpdate,
-                transform_propagate_system::<P>
-                    .label(TransformSystem::TransformPropagate)
-                    .after(grid_recentering::<P>),
-            );
-    }
-}
 
 #[derive(Component)]
 pub struct DebugBounds;

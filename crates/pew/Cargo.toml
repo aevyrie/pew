@@ -9,3 +9,5 @@ edition = "2021"
 bevy = "0.8"
 floating_origin = { path = "../floating_origin" }
 bevy-inspector-egui = "0.13"
+bytemuck = "1"
+rand = "0.8"
