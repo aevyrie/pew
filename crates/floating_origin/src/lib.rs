@@ -230,9 +230,9 @@ pub fn update_debug_bounds(
                 ..Default::default()
             }),
             material: polyline_materials.add(PolylineMaterial {
-                width: 3.0,
+                width: 2.0,
                 color: Color::RED,
-                perspective: false,
+                perspective: true,
                 ..Default::default()
             }),
             ..Default::default()

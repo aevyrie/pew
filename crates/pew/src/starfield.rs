@@ -27,7 +27,7 @@ use bytemuck::{Pod, Zeroable};
 use rand;
 
 pub fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
-    let instances = (1..=10_000)
+    let instances = (1..=200_000)
         .map(|_i| {
             // let theta = rand::random::<f32>() * std::f32::consts::PI * 2.0;
             // let phi = f32::acos(1.0 - 2.0 * rand::random::<f32>());
@@ -36,11 +36,11 @@ pub fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
             // let y = r * phi.sin() * theta.sin();
             // let z = r * phi.cos();
 
-            let scale = 250_000_000.0 + 100_000_000_000.0 * rand::random::<f32>();
+            let scale = 1_000_000_000_000.0 + 1_000_000_000_000.0 * rand::random::<f32>();
 
-            let x = (rand::random::<f32>() - 0.5) * 300_000_000_000_000.0;
-            let y = (rand::random::<f32>() - 0.5) * 300_000_000_000_000.0;
-            let z = (rand::random::<f32>() - 0.5) * 300_000_000_000_000.0;
+            let x = (rand::random::<f32>() - 0.5) * 10_000_000_000_000_000.0;
+            let y = (rand::random::<f32>() - 0.5) * 10_000_000_000_000_000.0;
+            let z = (rand::random::<f32>() - 0.5) * 10_000_000_000_000_000.0;
 
             let instance_data = StarInstanceData {
                 position: Vec3::new(x, y, z),

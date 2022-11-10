@@ -2,7 +2,7 @@ pub mod camera;
 pub mod starfield;
 
 use bevy::prelude::*;
-use bevy_inspector_egui::{InspectorPlugin, WorldInspectorPlugin};
+
 use floating_origin::{FloatingOriginCamera, FloatingOriginSettings, GridPosition};
 
 fn main() {
@@ -19,8 +19,8 @@ fn main() {
         .add_plugin(floating_origin::FloatingOriginPlugin::<i64>::default())
         .add_plugin(camera::CameraControllerPlugin)
         .add_plugin(starfield::StarfieldMaterialPlugin)
-        .add_plugin(WorldInspectorPlugin::new())
-        .add_plugin(InspectorPlugin::<FloatingOriginSettings>::new())
+        // .add_plugin(WorldInspectorPlugin::new())
+        // .add_plugin(InspectorPlugin::<FloatingOriginSettings>::new())
         .insert_resource(Msaa { samples: 4 })
         .insert_resource(FloatingOriginSettings::new(10_000.0, 100.0))
         .insert_resource(ClearColor(Color::BLACK))
@@ -53,7 +53,7 @@ fn setup(
         })
         .insert(FloatingOriginCamera)
         .insert(camera::CameraController::new(
-            299_792_458.0 * 1_000_000.0,
+            299_792_458.0 * 5_000_000.0,
             100.0,
         ));
 
@@ -91,7 +91,7 @@ fn setup(
                 subdivisions: 16,
             })),
             material: materials.add(StandardMaterial {
-                base_color: Color::WHITE,
+                base_color: Color::rgb_linear(1.0, 0.95, 0.65),
                 unlit: true,
                 ..Default::default()
             }),
@@ -103,10 +103,10 @@ fn setup(
         .spawn_bundle(PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Icosphere {
                 radius: 6_300_000.0,
-                subdivisions: 16,
+                subdivisions: 42,
             })),
             material: materials.add(StandardMaterial {
-                base_color: Color::BLUE,
+                base_color: Color::MIDNIGHT_BLUE,
                 ..Default::default()
             }),
             ..default()
