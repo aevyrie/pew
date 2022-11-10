@@ -76,7 +76,7 @@ fn setup(
     commands
         .spawn_bundle(DirectionalLightBundle {
             directional_light: DirectionalLight {
-                shadows_enabled: true,
+                shadows_enabled: false,
                 ..default()
             },
             transform: Transform::default().looking_at(Vec3::new(0.0, 0.0, 1.0), Vec3::Y),

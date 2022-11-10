@@ -245,7 +245,7 @@ pub fn grid_recentering<P: Precision>(
     settings: Res<FloatingOriginSettings>,
     mut query: Query<(&mut GridPosition<P>, &mut Transform), (Changed<Transform>, Without<Parent>)>,
 ) {
-    query.par_for_each_mut(1024, |(mut grid_pos, mut transform)| {
+    query.par_for_each_mut(20000, |(mut grid_pos, mut transform)| {
         let (grid_delta, translation) =
             settings.precise_translation(transform.as_ref().translation);
         *grid_pos = *grid_pos + grid_delta;
@@ -258,17 +258,25 @@ pub fn grid_recentering<P: Precision>(
 pub fn transform_propagate_system<P: Precision>(
     origin_settings: Res<FloatingOriginSettings>,
     mut camera: Query<(&GridPosition<P>, Changed<GridPosition<P>>), With<FloatingOriginCamera>>,
-    mut root_query: Query<
+    mut root_query_childless: Query<
         (
-            Option<(&Children, Changed<Children>)>,
             &Transform,
             Changed<Transform>,
             &GridPosition<P>,
             Changed<GridPosition<P>>,
             &mut GlobalTransform,
+        ),
+        (Without<Parent>, Without<Children>),
+    >,
+    mut root_query: Query<
+        (
+            &Children,
+            Changed<Children>,
+            Changed<Transform>,
+            &GlobalTransform,
             Entity,
         ),
-        Without<Parent>,
+        (Without<Parent>, With<Children>),
     >,
     mut transform_query: Query<(
         &Transform,
@@ -280,38 +288,41 @@ pub fn transform_propagate_system<P: Precision>(
 ) {
     let (cam_grid_pos, cam_grid_pos_changed) = camera.single_mut();
 
-    for (
-        children,
-        transform,
-        transform_changed,
-        entity_grid_pos,
-        grid_pos_changed,
-        mut global_transform,
-        entity,
-    ) in root_query.iter_mut()
+    root_query_childless.par_for_each_mut(
+        20000,
+        |(
+            transform,
+            transform_changed,
+            entity_grid_pos,
+            grid_pos_changed,
+            mut global_transform,
+        )| {
+            if transform_changed || grid_pos_changed || cam_grid_pos_changed {
+                let relative_grid = entity_grid_pos - cam_grid_pos;
+                let new_transform = transform
+                    .clone()
+                    .with_translation(origin_settings.pos_single(&relative_grid, transform));
+                *global_transform = GlobalTransform::from(new_transform);
+            }
+        },
+    );
+
+    for (children, changed_children, transform_changed, global_transform, entity) in
+        root_query.iter_mut()
     {
         let mut changed = transform_changed || cam_grid_pos_changed;
-        if transform_changed || grid_pos_changed || cam_grid_pos_changed {
-            let relative_grid = entity_grid_pos - cam_grid_pos;
-            let new_transform = transform
-                .clone()
-                .with_translation(origin_settings.pos_single(&relative_grid, transform));
-            *global_transform = GlobalTransform::from(new_transform);
-        }
 
-        if let Some((children, changed_children)) = children {
-            // If our `Children` has changed, we need to recalculate everything below us
-            changed |= changed_children;
-            for child in children {
-                let _ = propagate_recursive(
-                    &global_transform,
-                    &mut transform_query,
-                    &children_query,
-                    *child,
-                    entity,
-                    changed,
-                );
-            }
+        // If our `Children` has changed, we need to recalculate everything below us
+        changed |= changed_children;
+        for child in children {
+            let _ = propagate_recursive(
+                &global_transform,
+                &mut transform_query,
+                &children_query,
+                *child,
+                entity,
+                changed,
+            );
         }
     }
 }

@@ -27,7 +27,7 @@ use bytemuck::{Pod, Zeroable};
 use rand;
 
 pub fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
-    let instances = (1..=200_000)
+    let instances = (1..=100_000)
         .map(|_i| {
             // let theta = rand::random::<f32>() * std::f32::consts::PI * 2.0;
             // let phi = f32::acos(1.0 - 2.0 * rand::random::<f32>());
@@ -97,7 +97,7 @@ fn update_instance_positions(
         .iter_mut()
         .filter_map(|(transform, visibility, mut data)| {
             data.position = transform.translation();
-            visibility.is_visible_in_hierarchy().then_some(*data)
+            visibility.is_visible().then_some(*data)
         })
         .collect();
 }
