@@ -1,11 +1,13 @@
 use bevy::prelude::*;
-use floating_origin::{FloatingOriginCamera, GridPosition};
+use floating_origin::{FloatingOrigin, GridPosition};
 
 fn main() {
     App::new()
-        .add_plugins_with(DefaultPlugins, |group| {
-            group.disable::<bevy::transform::TransformPlugin>() // Disable built-in transform plugin
-        })
+        .add_plugins(
+            DefaultPlugins
+                .build()
+                .disable::<bevy::transform::TransformPlugin>(),
+        )
         .add_plugin(floating_origin::FloatingOriginPlugin::<i32>::default())
         .add_startup_system(setup)
         .add_system(rotator_system)
@@ -37,7 +39,7 @@ fn setup(
 
     // parent cube
     commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             mesh: cube_handle.clone(),
             material: cube_material_handle.clone(),
             transform: Transform::from_xyz(0.0, 0.0, 1.0),
@@ -47,7 +49,7 @@ fn setup(
         .insert(Rotator)
         .with_children(|parent| {
             // child cube
-            parent.spawn_bundle(PbrBundle {
+            parent.spawn(PbrBundle {
                 mesh: cube_handle,
                 material: cube_material_handle,
                 transform: Transform::from_xyz(0.0, 0.0, 3.0),
@@ -56,17 +58,17 @@ fn setup(
         });
     // light
     commands
-        .spawn_bundle(PointLightBundle {
+        .spawn(PointLightBundle {
             transform: Transform::from_xyz(4.0, 5.0, -4.0),
             ..default()
         })
         .insert(GridPosition::<i32>::default());
     // camera
     commands
-        .spawn_bundle(Camera3dBundle {
+        .spawn(Camera3dBundle {
             transform: Transform::from_xyz(5.0, 10.0, 10.0).looking_at(Vec3::ZERO, Vec3::Y),
             ..default()
         })
         .insert(GridPosition::<i32>::default())
-        .insert(FloatingOriginCamera);
+        .insert(FloatingOrigin);
 }

@@ -1,11 +1,23 @@
 [workspace]
 resolver = "2"
 members = ["crates/*"]
-default-members = ["crates/pew"]
 
 [profile.dev]
-opt-level = 1
+opt-level = 0
 
 [profile.dev.package."*"]
 opt-level = 3
 
+[package]
+name = "pew"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = { git = "https://github.com/bevyengine/bevy", branch = "main" }
+floating_origin = { path = "./crates/floating_origin" }
+bevy-inspector-egui = { git = "https://github.com/jakobhellermann/bevy-inspector-egui", branch = "main" }
+bytemuck = "1"
+rand = "0.8"

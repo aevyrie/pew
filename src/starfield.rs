@@ -2,13 +2,12 @@
 use bevy::{
     core_pipeline::core_3d::Transparent3d,
     ecs::system::{lifetimeless::*, SystemParamItem},
-    math::{prelude::*, Vec3A},
+    math::prelude::*,
     pbr::{MeshPipeline, MeshPipelineKey, MeshUniform, SetMeshBindGroup, SetMeshViewBindGroup},
     prelude::*,
     render::{
         extract_component::{ExtractComponent, ExtractComponentPlugin},
         mesh::{GpuBufferInfo, MeshVertexBufferLayout},
-        primitives::Aabb,
         render_asset::RenderAssets,
         render_phase::{
             AddRenderCommand, DrawFunctions, EntityRenderCommand, RenderCommandResult, RenderPhase,
@@ -48,23 +47,17 @@ pub fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
                 color: Color::hsl(
                     360.0 * rand::random::<f32>(),
                     0.0 + 0.15 * rand::random::<f32>(),
-                    0.0 + 0.3 * rand::random::<f32>(),
+                    2.0 * rand::random::<f32>(),
                 )
                 .as_rgba_f32(),
             };
             instance_data
         })
         .map(|instance_data| {
-            commands.spawn_bundle((
+            commands.spawn((
                 Transform::from_translation(instance_data.position),
                 GlobalTransform::default(),
-                Visibility::default(),
-                ComputedVisibility::default(),
                 floating_origin::GridPosition::<i64>::default(),
-                Aabb {
-                    center: Vec3A::ZERO,
-                    half_extents: Vec3A::splat(instance_data.scale),
-                },
                 crate::camera::IgnoreCamDist,
                 instance_data,
             ));
@@ -72,7 +65,7 @@ pub fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
         })
         .collect();
 
-    commands.spawn().insert_bundle((
+    commands.spawn((
         meshes.add(Mesh::from(shape::Icosphere {
             radius: 0.5,
             subdivisions: 1,
@@ -88,18 +81,12 @@ pub fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
 
 fn update_instance_positions(
     mut data: Query<&mut InstanceMaterialData>,
-    mut stars: Query<
-        (&GlobalTransform, &ComputedVisibility, &mut StarInstanceData),
-        Changed<GlobalTransform>,
-    >,
+    mut stars: Query<(&GlobalTransform, &mut StarInstanceData)>,
 ) {
-    data.single_mut().0 = stars
-        .iter_mut()
-        .filter_map(|(transform, visibility, mut data)| {
-            data.position = transform.translation();
-            visibility.is_visible().then_some(*data)
-        })
-        .collect();
+    stars.par_for_each_mut(10000, |(transform, mut data)| {
+        data.position = transform.translation();
+    });
+    data.single_mut().0 = stars.iter().map(|(_t, d)| *d).collect();
 }
 
 #[derive(Component, Deref, Default)]
@@ -133,8 +120,7 @@ impl Plugin for StarfieldMaterialPlugin {
     }
 }
 
-#[derive(Debug, Clone, Copy, Component, Default, Reflect, Pod, Zeroable)]
-#[reflect(Component)]
+#[derive(Clone, Copy, Pod, Zeroable, Component, Reflect)]
 #[repr(C)]
 struct StarInstanceData {
     position: Vec3,
@@ -161,11 +147,13 @@ fn queue_custom(
     let msaa_key = MeshPipelineKey::from_msaa_samples(msaa.samples);
 
     for (view, mut transparent_phase) in &mut views {
+        let view_key = msaa_key | MeshPipelineKey::from_hdr(view.hdr);
+
         let rangefinder = view.rangefinder3d();
         for (entity, mesh_uniform, mesh_handle) in &material_meshes {
             if let Some(mesh) = meshes.get(mesh_handle) {
                 let key =
-                    msaa_key | MeshPipelineKey::from_primitive_topology(mesh.primitive_topology);
+                    view_key | MeshPipelineKey::from_primitive_topology(mesh.primitive_topology);
                 let pipeline = pipelines
                     .specialize(&mut pipeline_cache, &custom_pipeline, key, &mesh.layout)
                     .unwrap();
@@ -204,6 +192,7 @@ fn prepare_instance_buffers(
     }
 }
 
+#[derive(Resource)]
 pub struct CustomPipeline {
     shader: Handle<Shader>,
     mesh_pipeline: MeshPipeline,
@@ -212,7 +201,6 @@ pub struct CustomPipeline {
 impl FromWorld for CustomPipeline {
     fn from_world(world: &mut World) -> Self {
         let asset_server = world.resource::<AssetServer>();
-        asset_server.watch_for_changes().unwrap();
         let shader = asset_server.load("shaders/instancing.wgsl");
 
         let mesh_pipeline = world.resource::<MeshPipeline>();

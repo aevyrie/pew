@@ -2,7 +2,7 @@ use std::ops::Add;
 
 use bevy::reflect::Reflect;
 
-pub trait Precision:
+pub trait GridIndex:
     Default
     + Eq
     + PartialEq
@@ -23,7 +23,7 @@ pub trait Precision:
     fn from_f64(input: f64) -> Self;
 }
 
-impl Precision for i128 {
+impl GridIndex for i128 {
     #[inline]
     fn wrapping_add(self, rhs: Self) -> Self {
         Self::wrapping_add(self, rhs)
@@ -46,7 +46,7 @@ impl Precision for i128 {
     }
 }
 
-impl Precision for i64 {
+impl GridIndex for i64 {
     #[inline]
     fn wrapping_add(self, rhs: Self) -> Self {
         Self::wrapping_add(self, rhs)
@@ -69,7 +69,7 @@ impl Precision for i64 {
     }
 }
 
-impl Precision for i32 {
+impl GridIndex for i32 {
     #[inline]
     fn wrapping_add(self, rhs: Self) -> Self {
         Self::wrapping_add(self, rhs)

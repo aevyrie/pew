@@ -6,6 +6,5 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = "0.8"
-bevy_polyline = "0.3"
-bevy-inspector-egui = "0.13"
+bevy = { git = "https://github.com/bevyengine/bevy", branch = "main" }
+bevy_polyline = { git = "https://github.com/foresightminingsoftwarecorporation/bevy_polyline", branch = "main" }

@@ -3,19 +3,24 @@ pub mod starfield;
 
 use bevy::prelude::*;
 
-use floating_origin::{FloatingOriginCamera, FloatingOriginSettings, GridPosition};
+use camera::CameraController;
+use floating_origin::{FloatingOrigin, FloatingOriginSettings, GridPosition};
 
 fn main() {
     App::new()
-        .insert_resource(WindowDescriptor {
-            cursor_visible: false,
-            // cursor_locked: true,
-            mode: bevy::window::WindowMode::Fullscreen,
-            ..default()
-        })
-        .add_plugins_with(DefaultPlugins, |group| {
-            group.disable::<bevy::transform::TransformPlugin>() // Disable built-in transform plugin
-        })
+        .add_plugins(
+            DefaultPlugins
+                .set(WindowPlugin {
+                    window: WindowDescriptor {
+                        cursor_visible: false,
+                        cursor_grab_mode: bevy::window::CursorGrabMode::Locked,
+                        mode: bevy::window::WindowMode::Fullscreen,
+                        ..default()
+                    },
+                    ..default()
+                })
+                .disable::<bevy::transform::TransformPlugin>(),
+        )
         .add_plugin(floating_origin::FloatingOriginPlugin::<i64>::default())
         .add_plugin(camera::CameraControllerPlugin)
         .add_plugin(starfield::StarfieldMaterialPlugin)
@@ -38,33 +43,40 @@ fn setup(
 ) {
     // camera
     commands
-        .spawn_bundle(Camera3dBundle {
+        .spawn(Camera3dBundle {
             projection: bevy::render::camera::Projection::Perspective(PerspectiveProjection {
                 // fov: 1.5,
                 ..default()
             }),
-            transform: Transform::from_xyz(0.0, 0.0, 258.0),
+            transform: Transform::from_xyz(0.0, 0.0, 450.0),
+            camera: Camera {
+                hdr: true,
+                ..default()
+            },
             ..default()
+        })
+        .insert(bevy::core_pipeline::bloom::BloomSettings {
+            threshold: 2.0,
+            knee: 0.1,
+            scale: 1.0,
+            intensity: 0.1,
         })
         .insert(GridPosition::<i64> {
             x: 0,
             y: 0,
             z: 999_370,
         })
-        .insert(FloatingOriginCamera)
-        .insert(camera::CameraController::new(
-            299_792_458.0 * 5_000_000.0,
-            100.0,
-        ));
+        .insert(FloatingOrigin)
+        .insert(CameraController::new(299_792_458.0 * 5_000_000.0, 100.0));
 
     commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
             material: materials.add(StandardMaterial {
                 base_color: Color::YELLOW,
                 ..Default::default()
             }),
-            transform: Transform::from_xyz(0.0, 0.0, 259.0),
+            transform: Transform::from_xyz(0.0, 0.0, 452.0),
             ..default()
         })
         .insert(GridPosition::<i64> {
@@ -74,7 +86,7 @@ fn setup(
         });
 
     commands
-        .spawn_bundle(DirectionalLightBundle {
+        .spawn(DirectionalLightBundle {
             directional_light: DirectionalLight {
                 shadows_enabled: false,
                 ..default()
@@ -85,14 +97,13 @@ fn setup(
         .insert(GridPosition::<i64>::default());
 
     commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Icosphere {
                 radius: 250_000_000.0,
                 subdivisions: 16,
             })),
             material: materials.add(StandardMaterial {
-                base_color: Color::rgb_linear(1.0, 0.95, 0.65),
-                unlit: true,
+                emissive: Color::rgb_linear(16.0, 15.0, 8.0),
                 ..Default::default()
             }),
             ..default()
@@ -100,13 +111,14 @@ fn setup(
         .insert(GridPosition::<i64>::default());
 
     commands
-        .spawn_bundle(PbrBundle {
+        .spawn(PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Icosphere {
                 radius: 6_300_000.0,
                 subdivisions: 42,
             })),
             material: materials.add(StandardMaterial {
                 base_color: Color::MIDNIGHT_BLUE,
+                perceptual_roughness: 0.9,
                 ..Default::default()
             }),
             ..default()

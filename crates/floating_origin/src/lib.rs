@@ -4,7 +4,6 @@
 //! When an object exceeds its boundary,
 
 use bevy::{math::DVec3, prelude::*, transform::TransformSystem};
-use bevy_inspector_egui::Inspectable;
 use bevy_polyline::prelude::{Polyline, PolylineBundle, PolylineMaterial};
 use std::marker::PhantomData;
 
@@ -12,35 +11,35 @@ pub mod precision;
 use precision::*;
 
 #[derive(Default)]
-pub struct FloatingOriginPlugin<P: Precision>(PhantomData<P>);
-impl<P: Precision> Plugin for FloatingOriginPlugin<P> {
+pub struct FloatingOriginPlugin<I: GridIndex>(PhantomData<I>);
+impl<I: GridIndex> Plugin for FloatingOriginPlugin<I> {
     fn build(&self, app: &mut App) {
         app.add_plugin(bevy_polyline::PolylinePlugin)
             .init_resource::<FloatingOriginSettings>()
             .register_type::<Transform>()
             .register_type::<GlobalTransform>()
-            .register_type::<GridPosition<P>>()
+            .register_type::<GridPosition<I>>()
             .add_startup_system(spawn_debug_bounds)
             // .add_system(update_debug_bounds)
             // add transform systems to startup so the first update is "correct"
-            .add_startup_system_to_stage(StartupStage::PostStartup, grid_recentering::<P>)
+            .add_startup_system_to_stage(StartupStage::PostStartup, grid_recentering::<I>)
             .add_startup_system_to_stage(
                 StartupStage::PostStartup,
-                transform_propagate_system::<P>
+                transform_propagate_system::<I>
                     .label(TransformSystem::TransformPropagate)
-                    .after(grid_recentering::<P>),
+                    .after(grid_recentering::<I>),
             )
-            .add_system_to_stage(CoreStage::PostUpdate, grid_recentering::<P>)
+            .add_system_to_stage(CoreStage::PostUpdate, grid_recentering::<I>)
             .add_system_to_stage(
                 CoreStage::PostUpdate,
-                transform_propagate_system::<P>
+                transform_propagate_system::<I>
                     .label(TransformSystem::TransformPropagate)
-                    .after(grid_recentering::<P>),
+                    .after(grid_recentering::<I>),
             );
     }
 }
 
-#[derive(Reflect, Inspectable)]
+#[derive(Reflect, Resource)]
 pub struct FloatingOriginSettings {
     grid_cell_edge_length: f32,
     distance_limit: f32,
@@ -59,14 +58,14 @@ impl FloatingOriginSettings {
     }
 
     /// Converts the
-    pub fn pos_double<P: Precision>(&self, pos: &GridPosition<P>, transform: &Transform) -> DVec3 {
+    pub fn pos_double<I: GridIndex>(&self, pos: &GridPosition<I>, transform: &Transform) -> DVec3 {
         DVec3 {
             x: pos.x.as_f64() * self.grid_cell_edge_length as f64 + transform.translation.x as f64,
             y: pos.y.as_f64() * self.grid_cell_edge_length as f64 + transform.translation.y as f64,
             z: pos.z.as_f64() * self.grid_cell_edge_length as f64 + transform.translation.z as f64,
         }
     }
-    pub fn pos_single<P: Precision>(&self, pos: &GridPosition<P>, transform: &Transform) -> Vec3 {
+    pub fn pos_single<I: GridIndex>(&self, pos: &GridPosition<I>, transform: &Transform) -> Vec3 {
         Vec3 {
             x: pos.x.as_f64() as f32 * self.grid_cell_edge_length + transform.translation.x,
             y: pos.y.as_f64() as f32 * self.grid_cell_edge_length + transform.translation.y,
@@ -74,7 +73,7 @@ impl FloatingOriginSettings {
         }
     }
 
-    pub fn precise_translation<P: Precision>(&self, input: Vec3) -> (GridPosition<P>, Vec3) {
+    pub fn precise_translation<I: GridIndex>(&self, input: Vec3) -> (GridPosition<I>, Vec3) {
         let l = self.grid_cell_edge_length as f64;
         let DVec3 { x, y, z } = input.as_dvec3();
 
@@ -91,9 +90,9 @@ impl FloatingOriginSettings {
 
         (
             GridPosition {
-                x: P::from_f64(x_r),
-                y: P::from_f64(y_r),
-                z: P::from_f64(z_r),
+                x: I::from_f64(x_r),
+                y: I::from_f64(y_r),
+                z: I::from_f64(z_r),
             },
             Vec3::new(t_x as f32, t_y as f32, t_z as f32),
         )
@@ -102,11 +101,11 @@ impl FloatingOriginSettings {
 
 impl Default for FloatingOriginSettings {
     fn default() -> Self {
-        Self::new(10_000_f32, 100_f32)
+        Self::new(10_000f32, 100f32)
     }
 }
 
-pub struct PreciseSpatialBundle<P: Precision> {
+pub struct PreciseSpatialBundle<I: GridIndex> {
     /// The visibility of the entity.
     pub visibility: Visibility,
     /// The computed visibility of the entity.
@@ -116,18 +115,18 @@ pub struct PreciseSpatialBundle<P: Precision> {
     /// The global transform of the entity.
     pub global_transform: GlobalTransform,
     /// The grid position of the entity
-    pub grid_position: GridPosition<P>,
+    pub grid_position: GridPosition<I>,
 }
 
 #[derive(Component, Default, Debug, PartialEq, Clone, Copy, Reflect)]
 #[reflect(Component, Default, PartialEq)]
-pub struct GridPosition<P: Precision> {
-    pub x: P,
-    pub y: P,
-    pub z: P,
+pub struct GridPosition<I: GridIndex> {
+    pub x: I,
+    pub y: I,
+    pub z: I,
 }
-impl<P: Precision> std::ops::Add for GridPosition<P> {
-    type Output = GridPosition<P>;
+impl<I: GridIndex> std::ops::Add for GridPosition<I> {
+    type Output = GridPosition<I>;
 
     fn add(self, rhs: Self) -> Self::Output {
         GridPosition {
@@ -137,8 +136,8 @@ impl<P: Precision> std::ops::Add for GridPosition<P> {
         }
     }
 }
-impl<P: Precision> std::ops::Sub for GridPosition<P> {
-    type Output = GridPosition<P>;
+impl<I: GridIndex> std::ops::Sub for GridPosition<I> {
+    type Output = GridPosition<I>;
 
     fn sub(self, rhs: Self) -> Self::Output {
         GridPosition {
@@ -148,8 +147,8 @@ impl<P: Precision> std::ops::Sub for GridPosition<P> {
         }
     }
 }
-impl<P: Precision> std::ops::Add for &GridPosition<P> {
-    type Output = GridPosition<P>;
+impl<I: GridIndex> std::ops::Add for &GridPosition<I> {
+    type Output = GridPosition<I>;
 
     fn add(self, rhs: Self) -> Self::Output {
         GridPosition {
@@ -159,8 +158,8 @@ impl<P: Precision> std::ops::Add for &GridPosition<P> {
         }
     }
 }
-impl<P: Precision> std::ops::Sub for &GridPosition<P> {
-    type Output = GridPosition<P>;
+impl<I: GridIndex> std::ops::Sub for &GridPosition<I> {
+    type Output = GridPosition<I>;
 
     fn sub(self, rhs: Self) -> Self::Output {
         GridPosition {
@@ -172,13 +171,13 @@ impl<P: Precision> std::ops::Sub for &GridPosition<P> {
 }
 
 #[derive(Component)]
-pub struct FloatingOriginCamera;
+pub struct FloatingOrigin;
 
 #[derive(Component)]
 pub struct DebugBounds;
 
 pub fn spawn_debug_bounds(mut commands: Commands) {
-    commands.spawn().insert(DebugBounds);
+    commands.spawn(DebugBounds);
 }
 
 pub fn update_debug_bounds(
@@ -222,48 +221,48 @@ pub fn update_debug_bounds(
         Vec3::NAN,
     ];
 
-    commands
-        .entity(debug_cube.single())
-        .insert_bundle(PolylineBundle {
-            polyline: polylines.add(Polyline {
-                vertices: indices.iter().map(|&i| vertices[i]).collect(),
-                ..Default::default()
-            }),
-            material: polyline_materials.add(PolylineMaterial {
-                width: 2.0,
-                color: Color::RED,
-                perspective: true,
-                ..Default::default()
-            }),
+    commands.entity(debug_cube.single()).insert(PolylineBundle {
+        polyline: polylines.add(Polyline {
+            vertices: indices.iter().map(|&i| vertices[i]).collect(),
             ..Default::default()
-        });
+        }),
+        material: polyline_materials.add(PolylineMaterial {
+            width: 2.0,
+            color: Color::RED,
+            perspective: true,
+            ..Default::default()
+        }),
+        ..Default::default()
+    });
 }
 
 /// If an entity's transform becomes larger than the specified limit, it is relocated to the next
 /// grid cell to reduce the size of the transform.
-pub fn grid_recentering<P: Precision>(
+pub fn grid_recentering<I: GridIndex>(
     settings: Res<FloatingOriginSettings>,
-    mut query: Query<(&mut GridPosition<P>, &mut Transform), (Changed<Transform>, Without<Parent>)>,
+    mut query: Query<(&mut GridPosition<I>, &mut Transform), (Changed<Transform>, Without<Parent>)>,
 ) {
-    query.par_for_each_mut(20000, |(mut grid_pos, mut transform)| {
-        let (grid_delta, translation) =
-            settings.precise_translation(transform.as_ref().translation);
-        *grid_pos = *grid_pos + grid_delta;
-        transform.translation = translation;
+    query.par_for_each_mut(10_000, |(mut grid_pos, mut transform)| {
+        if transform.as_ref().translation.abs().max_element() > settings.distance_limit {
+            let (grid_delta, translation) =
+                settings.precise_translation(transform.as_ref().translation);
+            *grid_pos = *grid_pos + grid_delta;
+            transform.translation = translation;
+        }
     });
 }
 
 /// Update [`GlobalTransform`] component of entities based on entity hierarchy, [`Transform`], and
 /// [`GridPosition`] components.
-pub fn transform_propagate_system<P: Precision>(
+pub fn transform_propagate_system<I: GridIndex>(
     origin_settings: Res<FloatingOriginSettings>,
-    mut camera: Query<(&GridPosition<P>, Changed<GridPosition<P>>), With<FloatingOriginCamera>>,
+    mut camera: Query<(&GridPosition<I>, Changed<GridPosition<I>>), With<FloatingOrigin>>,
     mut root_query_childless: Query<
         (
             &Transform,
             Changed<Transform>,
-            &GridPosition<P>,
-            Changed<GridPosition<P>>,
+            &GridPosition<I>,
+            Changed<GridPosition<I>>,
             &mut GlobalTransform,
         ),
         (Without<Parent>, Without<Children>),
@@ -289,7 +288,7 @@ pub fn transform_propagate_system<P: Precision>(
     let (cam_grid_pos, cam_grid_pos_changed) = camera.single_mut();
 
     root_query_childless.par_for_each_mut(
-        20000,
+        10000,
         |(
             transform,
             transform_changed,
