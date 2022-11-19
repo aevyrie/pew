@@ -22,6 +22,7 @@ use bevy::{
         RenderApp, RenderStage,
     },
 };
+use big_space::GridCell;
 use bytemuck::{Pod, Zeroable};
 use rand;
 
@@ -57,7 +58,7 @@ pub fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
             commands.spawn((
                 Transform::from_translation(instance_data.position),
                 GlobalTransform::default(),
-                big_space::GridPosition::<i64>::default(),
+                GridCell::<i128>::default(),
                 crate::camera::IgnoreCamDist,
                 instance_data,
             ));

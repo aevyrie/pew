@@ -4,7 +4,7 @@ pub mod starfield;
 
 use bevy::{prelude::*, sprite::Material2dPlugin};
 
-use big_space::{FloatingOrigin, FloatingOriginSettings, GridPosition};
+use big_space::{FloatingOrigin, FloatingOriginSettings, GridCell};
 use camera::CameraController;
 
 fn main() {
@@ -57,7 +57,7 @@ fn setup(
             },
             ..default()
         },
-        GridPosition::<i128> {
+        GridCell::<i128> {
             x: 0,
             y: 0,
             z: 999_370,
@@ -83,7 +83,7 @@ fn setup(
             transform: Transform::from_xyz(0.0, 0.0, 452.0),
             ..default()
         },
-        GridPosition::<i128> {
+        GridCell::<i128> {
             x: 0,
             y: 0,
             z: 999_370,
@@ -99,7 +99,7 @@ fn setup(
             transform: Transform::default().looking_at(Vec3::new(0.0, 0.0, 1.0), Vec3::Y),
             ..default()
         },
-        GridPosition::<i128>::default(),
+        GridCell::<i128>::default(),
     ));
 
     commands.spawn((
@@ -118,7 +118,7 @@ fn setup(
             }),
             ..default()
         },
-        GridPosition::<i128>::default(),
+        GridCell::<i128>::default(),
     ));
 
     commands.spawn((
@@ -138,7 +138,7 @@ fn setup(
             }),
             ..default()
         },
-        GridPosition::<i128> {
+        GridCell::<i128> {
             x: 0,
             y: 0,
             z: 1_000_000,

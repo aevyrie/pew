@@ -1,10 +1,10 @@
 use bevy::prelude::*;
-use big_space::{FloatingOrigin, GridPosition};
+use big_space::{FloatingOrigin, GridCell};
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(big_space::FloatingOriginPlugin::<i32>::default())
+        .add_plugin(big_space::FloatingOriginPlugin::<i64>::default())
         .add_startup_system(setup)
         .add_system(rotator_system)
         .run()
@@ -33,15 +33,17 @@ fn setup(
         ..default()
     });
 
+    const DISTANCE: f32 = 1_000_000_000_000_000_000_000_000_000_000_000_000.0;
+
     // parent cube
     commands
         .spawn(PbrBundle {
             mesh: cube_handle.clone(),
             material: cube_material_handle.clone(),
-            transform: Transform::from_xyz(0.0, 0.0, 1000000000000000.0),
+            transform: Transform::from_xyz(0.0, 0.0, DISTANCE),
             ..default()
         })
-        .insert(GridPosition::<i32>::default())
+        .insert(GridCell::<i64>::default())
         .insert(Rotator)
         .with_children(|parent| {
             // child cube
@@ -55,17 +57,17 @@ fn setup(
     // light
     commands
         .spawn(PointLightBundle {
-            transform: Transform::from_xyz(4.0, 5.0, 1000000000000004.0),
+            transform: Transform::from_xyz(4.0, 5.0, DISTANCE - 4.0),
             ..default()
         })
-        .insert(GridPosition::<i32>::default());
+        .insert(GridCell::<i64>::default());
     // camera
     commands
         .spawn(Camera3dBundle {
-            transform: Transform::from_xyz(5.0, 10.0, 1000000000000000.0)
-                .looking_at(Vec3::new(0.0, 0.0, 1000000000000000.0), Vec3::Y),
+            transform: Transform::from_xyz(5.0, 10.0, DISTANCE)
+                .looking_at(Vec3::new(0.0, 0.0, DISTANCE), Vec3::Y),
             ..default()
         })
-        .insert(GridPosition::<i32>::default())
+        .insert(GridCell::<i64>::default())
         .insert(FloatingOrigin);
 }

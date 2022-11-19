@@ -11,14 +11,14 @@ pub mod precision;
 use precision::*;
 
 #[derive(Default)]
-pub struct FloatingOriginPlugin<I: GridIndex>(PhantomData<I>);
-impl<I: GridIndex> Plugin for FloatingOriginPlugin<I> {
+pub struct FloatingOriginPlugin<I: Index>(PhantomData<I>);
+impl<I: Index> Plugin for FloatingOriginPlugin<I> {
     fn build(&self, app: &mut App) {
         app.add_plugin(bevy_polyline::PolylinePlugin)
             .init_resource::<FloatingOriginSettings>()
             .register_type::<Transform>()
             .register_type::<GlobalTransform>()
-            .register_type::<GridPosition<I>>()
+            .register_type::<GridCell<I>>()
             .add_startup_system(spawn_debug_bounds)
             .add_system(update_debug_bounds)
             // add transform systems to startup so the first update is "correct"
@@ -60,14 +60,14 @@ impl FloatingOriginSettings {
     }
 
     /// Converts the
-    pub fn pos_double<I: GridIndex>(&self, pos: &GridPosition<I>, transform: &Transform) -> DVec3 {
+    pub fn pos_double<I: Index>(&self, pos: &GridCell<I>, transform: &Transform) -> DVec3 {
         DVec3 {
             x: pos.x.as_f64() * self.grid_cell_edge_length as f64 + transform.translation.x as f64,
             y: pos.y.as_f64() * self.grid_cell_edge_length as f64 + transform.translation.y as f64,
             z: pos.z.as_f64() * self.grid_cell_edge_length as f64 + transform.translation.z as f64,
         }
     }
-    pub fn pos_single<I: GridIndex>(&self, pos: &GridPosition<I>, transform: &Transform) -> Vec3 {
+    pub fn pos_single<I: Index>(&self, pos: &GridCell<I>, transform: &Transform) -> Vec3 {
         Vec3 {
             x: pos.x.as_f64() as f32 * self.grid_cell_edge_length + transform.translation.x,
             y: pos.y.as_f64() as f32 * self.grid_cell_edge_length + transform.translation.y,
@@ -75,12 +75,12 @@ impl FloatingOriginSettings {
         }
     }
 
-    pub fn precise_translation<I: GridIndex>(&self, input: DVec3) -> (GridPosition<I>, Vec3) {
+    pub fn precise_translation<I: Index>(&self, input: DVec3) -> (GridCell<I>, Vec3) {
         let l = self.grid_cell_edge_length as f64;
         let DVec3 { x, y, z } = input;
 
         if input.abs().max_element() < self.distance_limit as f64 {
-            return (GridPosition::default(), input.as_vec3());
+            return (GridCell::default(), input.as_vec3());
         }
 
         let x_r = (x / l).round();
@@ -91,7 +91,7 @@ impl FloatingOriginSettings {
         let t_z = z - z_r * l;
 
         (
-            GridPosition {
+            GridCell {
                 x: I::from_f64(x_r),
                 y: I::from_f64(y_r),
                 z: I::from_f64(z_r),
@@ -107,7 +107,7 @@ impl Default for FloatingOriginSettings {
     }
 }
 
-pub struct PreciseSpatialBundle<I: GridIndex> {
+pub struct PreciseSpatialBundle<I: Index> {
     /// The visibility of the entity.
     pub visibility: Visibility,
     /// The computed visibility of the entity.
@@ -117,60 +117,80 @@ pub struct PreciseSpatialBundle<I: GridIndex> {
     /// The global transform of the entity.
     pub global_transform: GlobalTransform,
     /// The grid position of the entity
-    pub grid_position: GridPosition<I>,
+    pub grid_position: GridCell<I>,
 }
 
+/// Defines the grid cell this entity's `Transform` is relative to.
+///
+/// `GridPosition` is generic over a few integer types to allow you to select the grid size you
+/// need. Assuming you are using a grid cell edge length of 10,000 meters, these correspond with:
+///
+/// - i8: 2,560 km = 74% of the diameter of the Moon
+/// - i16 655,350 km = 85% of the diameter of the Moon's orbit around Earth
+/// - i32: 0.0045 light years = ~4 times the width of the solar system
+/// - i64: 19.5 million light years = ~100 times the width of the milky way galaxy
+/// - i128: 3.6e+26 light years = ~3.9e+15 times the width of the observable universe
+///
+/// # Note
+///
+/// Be sure you are using the same grid index precision everywhere. It might be a good idea to
+/// define a type alias!
+///
+/// ```
+/// type GalacticGrid = GridCell<i64>;
+/// ```
+///
 #[derive(Component, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Reflect)]
 #[reflect(Component, Default, PartialEq)]
-pub struct GridPosition<I: GridIndex> {
+pub struct GridCell<I: Index> {
     pub x: I,
     pub y: I,
     pub z: I,
 }
 
-impl<I: GridIndex> GridPosition<I> {
-    pub const ZERO: Self = GridPosition {
+impl<I: Index> GridCell<I> {
+    pub const ZERO: Self = GridCell {
         x: I::ZERO,
         y: I::ZERO,
         z: I::ZERO,
     };
-    pub const ONE: Self = GridPosition {
+    pub const ONE: Self = GridCell {
         x: I::ONE,
         y: I::ONE,
         z: I::ONE,
     };
 }
-impl<I: GridIndex> std::ops::Add for GridPosition<I> {
-    type Output = GridPosition<I>;
+impl<I: Index> std::ops::Add for GridCell<I> {
+    type Output = GridCell<I>;
 
     fn add(self, rhs: Self) -> Self::Output {
-        GridPosition {
+        GridCell {
             x: self.x.wrapping_add(rhs.x),
             y: self.y.wrapping_add(rhs.y),
             z: self.z.wrapping_add(rhs.z),
         }
     }
 }
-impl<I: GridIndex> std::ops::Sub for GridPosition<I> {
-    type Output = GridPosition<I>;
+impl<I: Index> std::ops::Sub for GridCell<I> {
+    type Output = GridCell<I>;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        GridPosition {
+        GridCell {
             x: self.x.wrapping_sub(rhs.x),
             y: self.y.wrapping_sub(rhs.y),
             z: self.z.wrapping_sub(rhs.z),
         }
     }
 }
-impl<I: GridIndex> std::ops::Add for &GridPosition<I> {
-    type Output = GridPosition<I>;
+impl<I: Index> std::ops::Add for &GridCell<I> {
+    type Output = GridCell<I>;
 
     fn add(self, rhs: Self) -> Self::Output {
         (*self).add(*rhs)
     }
 }
-impl<I: GridIndex> std::ops::Sub for &GridPosition<I> {
-    type Output = GridPosition<I>;
+impl<I: Index> std::ops::Sub for &GridCell<I> {
+    type Output = GridCell<I>;
 
     fn sub(self, rhs: Self) -> Self::Output {
         (*self).sub(*rhs)
@@ -245,9 +265,9 @@ pub fn update_debug_bounds(
 
 /// If an entity's transform becomes larger than the specified limit, it is relocated to the next
 /// grid cell to reduce the size of the transform.
-pub fn update_grid_origin<I: GridIndex>(
+pub fn update_grid_origin<I: Index>(
     settings: Res<FloatingOriginSettings>,
-    mut query: Query<(&mut GridPosition<I>, &mut Transform), (Changed<Transform>, Without<Parent>)>,
+    mut query: Query<(&mut GridCell<I>, &mut Transform), (Changed<Transform>, Without<Parent>)>,
 ) {
     query.par_for_each_mut(10_000, |(mut grid_pos, mut transform)| {
         if transform.as_ref().translation.abs().max_element() > settings.distance_limit {
@@ -259,15 +279,15 @@ pub fn update_grid_origin<I: GridIndex>(
     });
 }
 
-pub fn update_position_from_grid<I: GridIndex>(
+pub fn update_position_from_grid<I: Index>(
     origin_settings: Res<FloatingOriginSettings>,
-    mut origin: Query<(&GridPosition<I>, Changed<GridPosition<I>>), With<FloatingOrigin>>,
+    mut origin: Query<(&GridCell<I>, Changed<GridCell<I>>), With<FloatingOrigin>>,
     mut entities: ParamSet<(
         Query<
-            (&Transform, &GridPosition<I>, &mut GlobalTransform),
-            Or<(Changed<Transform>, Changed<GridPosition<I>>)>,
+            (&Transform, &GridCell<I>, &mut GlobalTransform),
+            Or<(Changed<Transform>, Changed<GridCell<I>>)>,
         >,
-        Query<(&Transform, &GridPosition<I>, &mut GlobalTransform)>,
+        Query<(&Transform, &GridCell<I>, &mut GlobalTransform)>,
     )>,
 ) {
     let (origin_pos, origin_grid_pos_changed) = origin.single_mut();
@@ -278,7 +298,7 @@ pub fn update_position_from_grid<I: GridIndex>(
             10_000,
             |(transform, entity_grid_pos, mut global_transform)| {
                 let grid_pos_delta = entity_grid_pos - origin_pos;
-                if grid_pos_delta != GridPosition::ZERO {
+                if grid_pos_delta != GridCell::ZERO {
                     let new_transform = transform
                         .clone()
                         .with_translation(origin_settings.pos_single(&grid_pos_delta, transform));
@@ -292,7 +312,7 @@ pub fn update_position_from_grid<I: GridIndex>(
             10_000,
             |(transform, entity_grid_pos, mut global_transform)| {
                 let grid_pos_delta = entity_grid_pos - origin_pos;
-                if grid_pos_delta != GridPosition::ZERO {
+                if grid_pos_delta != GridCell::ZERO {
                     let new_transform = transform
                         .clone()
                         .with_translation(origin_settings.pos_single(&grid_pos_delta, transform));
