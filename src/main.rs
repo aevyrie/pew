@@ -1,31 +1,27 @@
+pub mod atmosphere;
 pub mod camera;
 pub mod starfield;
-pub mod atmosphere;
 
 use bevy::{prelude::*, sprite::Material2dPlugin};
 
+use big_space::{FloatingOrigin, FloatingOriginSettings, GridPosition};
 use camera::CameraController;
-use floating_origin::{FloatingOrigin, FloatingOriginSettings, GridPosition};
 
 fn main() {
     App::new()
-        .add_plugins(
-            DefaultPlugins
-                .set(WindowPlugin {
-                    #[cfg(not(target_arch = "wasm32"))]
-                    window: WindowDescriptor {
-                        cursor_visible: false,
-                        cursor_grab_mode: bevy::window::CursorGrabMode::Locked,
-                        mode: bevy::window::WindowMode::Fullscreen,
-                        ..default()
-                    },
-                    ..default()
-                })
-                .disable::<bevy::transform::TransformPlugin>(),
-        )
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            #[cfg(not(target_arch = "wasm32"))]
+            window: WindowDescriptor {
+                cursor_visible: false,
+                cursor_grab_mode: bevy::window::CursorGrabMode::Locked,
+                mode: bevy::window::WindowMode::Fullscreen,
+                ..default()
+            },
+            ..default()
+        }))
         .add_plugin(bevy_framepace::FramepacePlugin)
-        .add_plugin(floating_origin::FloatingOriginPlugin::<i128>::default())
-    .add_plugin(Material2dPlugin::<atmosphere::PostProcessingMaterial>::default())
+        .add_plugin(big_space::FloatingOriginPlugin::<i128>::default())
+        .add_plugin(Material2dPlugin::<atmosphere::PostProcessingMaterial>::default())
         .add_plugin(camera::CameraControllerPlugin)
         .add_plugin(starfield::StarfieldMaterialPlugin)
         .insert_resource(Msaa {
@@ -108,10 +104,14 @@ fn setup(
 
     commands.spawn((
         PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Icosphere {
-                radius: 250_000_000.0,
-                subdivisions: 16,
-            })),
+            mesh: meshes.add(
+                shape::Icosphere {
+                    radius: 250_000_000.0,
+                    subdivisions: 16,
+                }
+                .try_into()
+                .unwrap(),
+            ),
             material: materials.add(StandardMaterial {
                 emissive: Color::rgb_linear(16.0, 15.0, 8.0),
                 ..Default::default()
@@ -123,10 +123,14 @@ fn setup(
 
     commands.spawn((
         PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Icosphere {
-                radius: 6_300_000.0,
-                subdivisions: 42,
-            })),
+            mesh: meshes.add(
+                shape::Icosphere {
+                    radius: 6_300_000.0,
+                    subdivisions: 42,
+                }
+                .try_into()
+                .unwrap(),
+            ),
             material: materials.add(StandardMaterial {
                 base_color: Color::MIDNIGHT_BLUE,
                 perceptual_roughness: 0.9,

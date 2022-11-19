@@ -57,7 +57,7 @@ pub fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
             commands.spawn((
                 Transform::from_translation(instance_data.position),
                 GlobalTransform::default(),
-                floating_origin::GridPosition::<i128>::default(),
+                big_space::GridPosition::<i64>::default(),
                 crate::camera::IgnoreCamDist,
                 instance_data,
             ));
@@ -66,10 +66,14 @@ pub fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
         .collect();
 
     commands.spawn((
-        meshes.add(Mesh::from(shape::Icosphere {
-            radius: 0.5,
-            subdivisions: 1,
-        })),
+        meshes.add(
+            shape::Icosphere {
+                radius: 0.5,
+                subdivisions: 1,
+            }
+            .try_into()
+            .unwrap(),
+        ),
         Transform::from_xyz(0.0, 0.0, 0.0),
         GlobalTransform::default(),
         InstanceMaterialData(instances),

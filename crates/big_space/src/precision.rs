@@ -4,8 +4,10 @@ use bevy::reflect::Reflect;
 
 pub trait GridIndex:
     Default
-    + Eq
     + PartialEq
+    + Eq
+    + PartialOrd
+    + Ord
     + Copy
     + Clone
     + Send
@@ -16,14 +18,18 @@ pub trait GridIndex:
     + std::fmt::Display
     + 'static
 {
+    const ZERO: Self;
+    const ONE: Self;
     fn wrapping_add(self, rhs: Self) -> Self;
     fn wrapping_sub(self, rhs: Self) -> Self;
-    fn one() -> Self;
     fn as_f64(self) -> f64;
     fn from_f64(input: f64) -> Self;
 }
 
 impl GridIndex for i32 {
+    const ZERO: Self = 0;
+    const ONE: Self = 1;
+
     #[inline]
     fn wrapping_add(self, rhs: Self) -> Self {
         Self::wrapping_add(self, rhs)
@@ -31,10 +37,6 @@ impl GridIndex for i32 {
     #[inline]
     fn wrapping_sub(self, rhs: Self) -> Self {
         Self::wrapping_sub(self, rhs)
-    }
-    #[inline]
-    fn one() -> Self {
-        1
     }
     #[inline]
     fn as_f64(self) -> f64 {
@@ -47,6 +49,9 @@ impl GridIndex for i32 {
 }
 
 impl GridIndex for i64 {
+    const ZERO: Self = 0;
+    const ONE: Self = 1;
+
     #[inline]
     fn wrapping_add(self, rhs: Self) -> Self {
         Self::wrapping_add(self, rhs)
@@ -54,10 +59,6 @@ impl GridIndex for i64 {
     #[inline]
     fn wrapping_sub(self, rhs: Self) -> Self {
         Self::wrapping_sub(self, rhs)
-    }
-    #[inline]
-    fn one() -> Self {
-        1
     }
     #[inline]
     fn as_f64(self) -> f64 {
@@ -70,6 +71,9 @@ impl GridIndex for i64 {
 }
 
 impl GridIndex for i128 {
+    const ZERO: Self = 0;
+    const ONE: Self = 1;
+
     #[inline]
     fn wrapping_add(self, rhs: Self) -> Self {
         Self::wrapping_add(self, rhs)
@@ -77,10 +81,6 @@ impl GridIndex for i128 {
     #[inline]
     fn wrapping_sub(self, rhs: Self) -> Self {
         Self::wrapping_sub(self, rhs)
-    }
-    #[inline]
-    fn one() -> Self {
-        1
     }
     #[inline]
     fn as_f64(self) -> f64 {

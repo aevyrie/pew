@@ -1,14 +1,10 @@
 use bevy::prelude::*;
-use floating_origin::{FloatingOrigin, GridPosition};
+use big_space::{FloatingOrigin, GridPosition};
 
 fn main() {
     App::new()
-        .add_plugins(
-            DefaultPlugins
-                .build()
-                .disable::<bevy::transform::TransformPlugin>(),
-        )
-        .add_plugin(floating_origin::FloatingOriginPlugin::<i32>::default())
+        .add_plugins(DefaultPlugins)
+        .add_plugin(big_space::FloatingOriginPlugin::<i32>::default())
         .add_startup_system(setup)
         .add_system(rotator_system)
         .run()
@@ -42,7 +38,7 @@ fn setup(
         .spawn(PbrBundle {
             mesh: cube_handle.clone(),
             material: cube_material_handle.clone(),
-            transform: Transform::from_xyz(0.0, 0.0, 1.0),
+            transform: Transform::from_xyz(0.0, 0.0, 1000000000000000.0),
             ..default()
         })
         .insert(GridPosition::<i32>::default())
@@ -59,14 +55,15 @@ fn setup(
     // light
     commands
         .spawn(PointLightBundle {
-            transform: Transform::from_xyz(4.0, 5.0, -4.0),
+            transform: Transform::from_xyz(4.0, 5.0, 1000000000000004.0),
             ..default()
         })
         .insert(GridPosition::<i32>::default());
     // camera
     commands
         .spawn(Camera3dBundle {
-            transform: Transform::from_xyz(5.0, 10.0, 10.0).looking_at(Vec3::ZERO, Vec3::Y),
+            transform: Transform::from_xyz(5.0, 10.0, 1000000000000000.0)
+                .looking_at(Vec3::new(0.0, 0.0, 1000000000000000.0), Vec3::Y),
             ..default()
         })
         .insert(GridPosition::<i32>::default())

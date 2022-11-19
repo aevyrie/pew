@@ -19,22 +19,24 @@ impl<I: GridIndex> Plugin for FloatingOriginPlugin<I> {
             .register_type::<Transform>()
             .register_type::<GlobalTransform>()
             .register_type::<GridPosition<I>>()
-            // .add_startup_system(spawn_debug_bounds)
-            // .add_system(update_debug_bounds)
+            .add_startup_system(spawn_debug_bounds)
+            .add_system(update_debug_bounds)
             // add transform systems to startup so the first update is "correct"
-            .add_startup_system_to_stage(StartupStage::PostStartup, grid_recentering::<I>)
+            .add_startup_system_to_stage(StartupStage::PostStartup, update_grid_origin::<I>)
             .add_startup_system_to_stage(
                 StartupStage::PostStartup,
-                transform_propagate_system::<I>
-                    .label(TransformSystem::TransformPropagate)
-                    .after(grid_recentering::<I>),
+                update_position_from_grid::<I>
+                    .after(update_grid_origin::<I>)
+                    .before(bevy::transform::transform_propagate_system)
+                    .label(TransformSystem::TransformPropagate),
             )
-            .add_system_to_stage(CoreStage::PostUpdate, grid_recentering::<I>)
+            .add_system_to_stage(CoreStage::PostUpdate, update_grid_origin::<I>)
             .add_system_to_stage(
                 CoreStage::PostUpdate,
-                transform_propagate_system::<I>
-                    .label(TransformSystem::TransformPropagate)
-                    .after(grid_recentering::<I>),
+                update_position_from_grid::<I>
+                    .after(update_grid_origin::<I>)
+                    .before(bevy::transform::transform_propagate_system)
+                    .label(TransformSystem::TransformPropagate),
             );
     }
 }
@@ -73,12 +75,12 @@ impl FloatingOriginSettings {
         }
     }
 
-    pub fn precise_translation<I: GridIndex>(&self, input: Vec3) -> (GridPosition<I>, Vec3) {
+    pub fn precise_translation<I: GridIndex>(&self, input: DVec3) -> (GridPosition<I>, Vec3) {
         let l = self.grid_cell_edge_length as f64;
-        let DVec3 { x, y, z } = input.as_dvec3();
+        let DVec3 { x, y, z } = input;
 
-        if input.abs().max_element() < self.distance_limit {
-            return (GridPosition::default(), input);
+        if input.abs().max_element() < self.distance_limit as f64 {
+            return (GridPosition::default(), input.as_vec3());
         }
 
         let x_r = (x / l).round();
@@ -118,12 +120,25 @@ pub struct PreciseSpatialBundle<I: GridIndex> {
     pub grid_position: GridPosition<I>,
 }
 
-#[derive(Component, Default, Debug, PartialEq, Clone, Copy, Reflect)]
+#[derive(Component, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Reflect)]
 #[reflect(Component, Default, PartialEq)]
 pub struct GridPosition<I: GridIndex> {
     pub x: I,
     pub y: I,
     pub z: I,
+}
+
+impl<I: GridIndex> GridPosition<I> {
+    pub const ZERO: Self = GridPosition {
+        x: I::ZERO,
+        y: I::ZERO,
+        z: I::ZERO,
+    };
+    pub const ONE: Self = GridPosition {
+        x: I::ONE,
+        y: I::ONE,
+        z: I::ONE,
+    };
 }
 impl<I: GridIndex> std::ops::Add for GridPosition<I> {
     type Output = GridPosition<I>;
@@ -151,22 +166,14 @@ impl<I: GridIndex> std::ops::Add for &GridPosition<I> {
     type Output = GridPosition<I>;
 
     fn add(self, rhs: Self) -> Self::Output {
-        GridPosition {
-            x: self.x.wrapping_add(rhs.x),
-            y: self.y.wrapping_add(rhs.y),
-            z: self.z.wrapping_add(rhs.z),
-        }
+        (*self).add(*rhs)
     }
 }
 impl<I: GridIndex> std::ops::Sub for &GridPosition<I> {
     type Output = GridPosition<I>;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        GridPosition {
-            x: self.x.wrapping_sub(rhs.x),
-            y: self.y.wrapping_sub(rhs.y),
-            z: self.z.wrapping_sub(rhs.z),
-        }
+        (*self).sub(*rhs)
     }
 }
 
@@ -238,135 +245,60 @@ pub fn update_debug_bounds(
 
 /// If an entity's transform becomes larger than the specified limit, it is relocated to the next
 /// grid cell to reduce the size of the transform.
-pub fn grid_recentering<I: GridIndex>(
+pub fn update_grid_origin<I: GridIndex>(
     settings: Res<FloatingOriginSettings>,
     mut query: Query<(&mut GridPosition<I>, &mut Transform), (Changed<Transform>, Without<Parent>)>,
 ) {
     query.par_for_each_mut(10_000, |(mut grid_pos, mut transform)| {
         if transform.as_ref().translation.abs().max_element() > settings.distance_limit {
             let (grid_delta, translation) =
-                settings.precise_translation(transform.as_ref().translation);
+                settings.precise_translation(transform.as_ref().translation.as_dvec3());
             *grid_pos = *grid_pos + grid_delta;
             transform.translation = translation;
         }
     });
 }
 
-/// Update [`GlobalTransform`] component of entities based on entity hierarchy, [`Transform`], and
-/// [`GridPosition`] components.
-pub fn transform_propagate_system<I: GridIndex>(
+pub fn update_position_from_grid<I: GridIndex>(
     origin_settings: Res<FloatingOriginSettings>,
-    mut camera: Query<(&GridPosition<I>, Changed<GridPosition<I>>), With<FloatingOrigin>>,
-    mut root_query_childless: Query<
-        (
-            &Transform,
-            Changed<Transform>,
-            &GridPosition<I>,
-            Changed<GridPosition<I>>,
-            &mut GlobalTransform,
-        ),
-        (Without<Parent>, Without<Children>),
-    >,
-    mut root_query: Query<
-        (
-            &Children,
-            Changed<Children>,
-            Changed<Transform>,
-            &GlobalTransform,
-            Entity,
-        ),
-        (Without<Parent>, With<Children>),
-    >,
-    mut transform_query: Query<(
-        &Transform,
-        Changed<Transform>,
-        &mut GlobalTransform,
-        &Parent,
+    mut origin: Query<(&GridPosition<I>, Changed<GridPosition<I>>), With<FloatingOrigin>>,
+    mut entities: ParamSet<(
+        Query<
+            (&Transform, &GridPosition<I>, &mut GlobalTransform),
+            Or<(Changed<Transform>, Changed<GridPosition<I>>)>,
+        >,
+        Query<(&Transform, &GridPosition<I>, &mut GlobalTransform)>,
     )>,
-    children_query: Query<(&Children, Changed<Children>), (With<Parent>, With<GlobalTransform>)>,
 ) {
-    let (cam_grid_pos, cam_grid_pos_changed) = camera.single_mut();
+    let (origin_pos, origin_grid_pos_changed) = origin.single_mut();
 
-    root_query_childless.par_for_each_mut(
-        10_000,
-        |(
-            transform,
-            transform_changed,
-            entity_grid_pos,
-            grid_pos_changed,
-            mut global_transform,
-        )| {
-            if transform_changed || grid_pos_changed || cam_grid_pos_changed {
-                let relative_grid = entity_grid_pos - cam_grid_pos;
-                let new_transform = transform
-                    .clone()
-                    .with_translation(origin_settings.pos_single(&relative_grid, transform));
-                *global_transform = GlobalTransform::from(new_transform);
-            }
-        },
-    );
-
-    for (children, changed_children, transform_changed, global_transform, entity) in
-        root_query.iter_mut()
-    {
-        let mut changed = transform_changed || cam_grid_pos_changed;
-
-        // If our `Children` has changed, we need to recalculate everything below us
-        changed |= changed_children;
-        for child in children {
-            let _ = propagate_recursive(
-                &global_transform,
-                &mut transform_query,
-                &children_query,
-                *child,
-                entity,
-                changed,
-            );
-        }
-    }
-}
-
-fn propagate_recursive(
-    parent: &GlobalTransform,
-    transform_query: &mut Query<(
-        &Transform,
-        Changed<Transform>,
-        &mut GlobalTransform,
-        &Parent,
-    )>,
-    children_query: &Query<(&Children, Changed<Children>), (With<Parent>, With<GlobalTransform>)>,
-    entity: Entity,
-    expected_parent: Entity,
-    mut changed: bool,
-    // We use a result here to use the `?` operator. Ideally we'd use a try block instead
-) -> Result<(), ()> {
-    let global_matrix = {
-        let (transform, transform_changed, mut global_transform, child_parent) =
-            transform_query.get_mut(entity).map_err(drop)?;
-        // Note that for parallelising, this check cannot occur here, since there is an `&mut GlobalTransform` (in global_transform)
-        assert_eq!(
-                child_parent.get(), expected_parent,
-        "Malformed hierarchy. This probably means that your hierarchy has been improperly maintained, or contains a cycle"
+    if origin_grid_pos_changed {
+        let mut all_entities = entities.p1();
+        all_entities.par_for_each_mut(
+            10_000,
+            |(transform, entity_grid_pos, mut global_transform)| {
+                let grid_pos_delta = entity_grid_pos - origin_pos;
+                if grid_pos_delta != GridPosition::ZERO {
+                    let new_transform = transform
+                        .clone()
+                        .with_translation(origin_settings.pos_single(&grid_pos_delta, transform));
+                    *global_transform = GlobalTransform::from(new_transform);
+                }
+            },
         );
-        changed |= transform_changed;
-        if changed {
-            *global_transform = parent.mul_transform(*transform);
-        }
-        *global_transform
-    };
-
-    let (children, changed_children) = children_query.get(entity).map_err(drop)?;
-    // If our `Children` has changed, we need to recalculate everything below us
-    changed |= changed_children;
-    for child in children {
-        let _ = propagate_recursive(
-            &global_matrix,
-            transform_query,
-            children_query,
-            *child,
-            entity,
-            changed,
+    } else {
+        let mut changed_entities = entities.p0();
+        changed_entities.par_for_each_mut(
+            10_000,
+            |(transform, entity_grid_pos, mut global_transform)| {
+                let grid_pos_delta = entity_grid_pos - origin_pos;
+                if grid_pos_delta != GridPosition::ZERO {
+                    let new_transform = transform
+                        .clone()
+                        .with_translation(origin_settings.pos_single(&grid_pos_delta, transform));
+                    *global_transform = GlobalTransform::from(new_transform);
+                }
+            },
         );
     }
-    Ok(())
 }

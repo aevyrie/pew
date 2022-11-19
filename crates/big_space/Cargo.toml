@@ -1,0 +1,16 @@
+[package]
+name = "big_space"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", default_features = false }
+bevy_polyline = { git = "https://github.com/foresightminingsoftwarecorporation/bevy_polyline", branch = "main" }
+
+[dev-dependencies]
+bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", default_features = false, features = [
+    "bevy_render",
+    "bevy_winit",
+] }
