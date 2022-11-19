@@ -19,7 +19,7 @@ impl<I: GridIndex> Plugin for FloatingOriginPlugin<I> {
             .register_type::<Transform>()
             .register_type::<GlobalTransform>()
             .register_type::<GridPosition<I>>()
-            .add_startup_system(spawn_debug_bounds)
+            // .add_startup_system(spawn_debug_bounds)
             // .add_system(update_debug_bounds)
             // add transform systems to startup so the first update is "correct"
             .add_startup_system_to_stage(StartupStage::PostStartup, grid_recentering::<I>)
@@ -227,9 +227,9 @@ pub fn update_debug_bounds(
             ..Default::default()
         }),
         material: polyline_materials.add(PolylineMaterial {
-            width: 2.0,
-            color: Color::RED,
-            perspective: true,
+            width: 3.0,
+            color: Color::rgb(1.8, 0., 0.),
+            perspective: false,
             ..Default::default()
         }),
         ..Default::default()
@@ -288,7 +288,7 @@ pub fn transform_propagate_system<I: GridIndex>(
     let (cam_grid_pos, cam_grid_pos_changed) = camera.single_mut();
 
     root_query_childless.par_for_each_mut(
-        10000,
+        10_000,
         |(
             transform,
             transform_changed,

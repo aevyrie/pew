@@ -1,7 +1,8 @@
 pub mod camera;
 pub mod starfield;
+pub mod atmosphere;
 
-use bevy::prelude::*;
+use bevy::{prelude::*, sprite::Material2dPlugin};
 
 use camera::CameraController;
 use floating_origin::{FloatingOrigin, FloatingOriginSettings, GridPosition};
@@ -11,6 +12,7 @@ fn main() {
         .add_plugins(
             DefaultPlugins
                 .set(WindowPlugin {
+                    #[cfg(not(target_arch = "wasm32"))]
                     window: WindowDescriptor {
                         cursor_visible: false,
                         cursor_grab_mode: bevy::window::CursorGrabMode::Locked,
@@ -21,12 +23,16 @@ fn main() {
                 })
                 .disable::<bevy::transform::TransformPlugin>(),
         )
-        .add_plugin(floating_origin::FloatingOriginPlugin::<i64>::default())
+        .add_plugin(bevy_framepace::FramepacePlugin)
+        .add_plugin(floating_origin::FloatingOriginPlugin::<i128>::default())
+    .add_plugin(Material2dPlugin::<atmosphere::PostProcessingMaterial>::default())
         .add_plugin(camera::CameraControllerPlugin)
         .add_plugin(starfield::StarfieldMaterialPlugin)
-        // .add_plugin(WorldInspectorPlugin::new())
-        // .add_plugin(InspectorPlugin::<FloatingOriginSettings>::new())
-        .insert_resource(Msaa { samples: 4 })
+        .insert_resource(Msaa {
+            #[cfg(target_arch = "wasm32")]
+            samples: 1,
+            ..default()
+        })
         .insert_resource(FloatingOriginSettings::new(10_000.0, 100.0))
         .insert_resource(ClearColor(Color::BLACK))
         .add_startup_system(setup)
@@ -42,8 +48,8 @@ fn setup(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     // camera
-    commands
-        .spawn(Camera3dBundle {
+    let camera = &mut commands.spawn((
+        Camera3dBundle {
             projection: bevy::render::camera::Projection::Perspective(PerspectiveProjection {
                 // fov: 1.5,
                 ..default()
@@ -54,23 +60,25 @@ fn setup(
                 ..default()
             },
             ..default()
-        })
-        .insert(bevy::core_pipeline::bloom::BloomSettings {
-            threshold: 2.0,
-            knee: 0.1,
-            scale: 1.0,
-            intensity: 0.1,
-        })
-        .insert(GridPosition::<i64> {
+        },
+        GridPosition::<i128> {
             x: 0,
             y: 0,
             z: 999_370,
-        })
-        .insert(FloatingOrigin)
-        .insert(CameraController::new(299_792_458.0 * 5_000_000.0, 100.0));
+        },
+        FloatingOrigin,
+        CameraController::new(299_792_458.0 * 5_000_000.0, 100.0),
+    ));
+    #[cfg(not(target_arch = "wasm32"))]
+    camera.insert(bevy::core_pipeline::bloom::BloomSettings {
+        threshold: 2.0,
+        knee: 0.1,
+        scale: 1.0,
+        intensity: 0.1,
+    });
 
-    commands
-        .spawn(PbrBundle {
+    commands.spawn((
+        PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
             material: materials.add(StandardMaterial {
                 base_color: Color::YELLOW,
@@ -78,26 +86,28 @@ fn setup(
             }),
             transform: Transform::from_xyz(0.0, 0.0, 452.0),
             ..default()
-        })
-        .insert(GridPosition::<i64> {
+        },
+        GridPosition::<i128> {
             x: 0,
             y: 0,
             z: 999_370,
-        });
+        },
+    ));
 
-    commands
-        .spawn(DirectionalLightBundle {
+    commands.spawn((
+        DirectionalLightBundle {
             directional_light: DirectionalLight {
                 shadows_enabled: false,
                 ..default()
             },
             transform: Transform::default().looking_at(Vec3::new(0.0, 0.0, 1.0), Vec3::Y),
             ..default()
-        })
-        .insert(GridPosition::<i64>::default());
+        },
+        GridPosition::<i128>::default(),
+    ));
 
-    commands
-        .spawn(PbrBundle {
+    commands.spawn((
+        PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Icosphere {
                 radius: 250_000_000.0,
                 subdivisions: 16,
@@ -107,11 +117,12 @@ fn setup(
                 ..Default::default()
             }),
             ..default()
-        })
-        .insert(GridPosition::<i64>::default());
+        },
+        GridPosition::<i128>::default(),
+    ));
 
-    commands
-        .spawn(PbrBundle {
+    commands.spawn((
+        PbrBundle {
             mesh: meshes.add(Mesh::from(shape::Icosphere {
                 radius: 6_300_000.0,
                 subdivisions: 42,
@@ -122,10 +133,11 @@ fn setup(
                 ..Default::default()
             }),
             ..default()
-        })
-        .insert(GridPosition::<i64> {
+        },
+        GridPosition::<i128> {
             x: 0,
             y: 0,
             z: 1_000_000,
-        });
+        },
+    ));
 }

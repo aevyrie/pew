@@ -57,7 +57,7 @@ pub fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
             commands.spawn((
                 Transform::from_translation(instance_data.position),
                 GlobalTransform::default(),
-                floating_origin::GridPosition::<i64>::default(),
+                floating_origin::GridPosition::<i128>::default(),
                 crate::camera::IgnoreCamDist,
                 instance_data,
             ));

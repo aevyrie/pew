@@ -23,7 +23,7 @@ pub trait GridIndex:
     fn from_f64(input: f64) -> Self;
 }
 
-impl GridIndex for i128 {
+impl GridIndex for i32 {
     #[inline]
     fn wrapping_add(self, rhs: Self) -> Self {
         Self::wrapping_add(self, rhs)
@@ -69,7 +69,7 @@ impl GridIndex for i64 {
     }
 }
 
-impl GridIndex for i32 {
+impl GridIndex for i128 {
     #[inline]
     fn wrapping_add(self, rhs: Self) -> Self {
         Self::wrapping_add(self, rhs)

@@ -16,7 +16,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = { git = "https://github.com/bevyengine/bevy", branch = "main" }
+bevy = "0.9"
+bevy_framepace = "0.9.1"
 floating_origin = { path = "./crates/floating_origin" }
 bevy-inspector-egui = { git = "https://github.com/jakobhellermann/bevy-inspector-egui", branch = "main" }
 bytemuck = "1"
