@@ -3,7 +3,7 @@ use big_space::{FloatingOrigin, GridCell};
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.build().disable::<TransformPlugin>())
         .add_plugin(big_space::FloatingOriginPlugin::<i64>::default())
         .add_startup_system(setup)
         .add_system(rotator_system)

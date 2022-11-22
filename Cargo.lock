@@ -63,28 +63,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "alsa"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5915f52fe2cf65e83924d037b6c5290b7cee097c6b5c8700746e6168a343fd6b"
-dependencies = [
- "alsa-sys",
- "bitflags",
- "libc",
- "nix 0.23.1",
-]
-
-[[package]]
-name = "alsa-sys"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db8fee663d06c4e303404ef5f40488a53e062f89ba8bfed81f42325aafad1527"
-dependencies = [
- "libc",
- "pkg-config",
-]
-
-[[package]]
 name = "android_log-sys"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -214,12 +192,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
-name = "base-x"
-version = "0.2.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4cbbc9d0964165b47557570cce6c952866c2678457aca742aafc9fb771d30270"
-
-[[package]]
 name = "base64"
 version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -237,15 +209,15 @@ dependencies = [
 [[package]]
 name = "bevy"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_internal 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_internal 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
 ]
 
 [[package]]
 name = "bevy-inspector-egui"
 version = "0.14.0"
-source = "git+https://github.com/jakobhellermann/bevy-inspector-egui?branch=main#faea5e2406f94bc0146c55b2c668da8f921dcbc2"
+source = "git+https://github.com/jakobhellermann/bevy-inspector-egui?branch=main#4a8f3c34a0edf3acd7dd32724eb004778f471793"
 dependencies = [
  "bevy 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "bevy-inspector-egui-derive",
@@ -257,28 +229,11 @@ dependencies = [
 [[package]]
 name = "bevy-inspector-egui-derive"
 version = "0.14.0"
-source = "git+https://github.com/jakobhellermann/bevy-inspector-egui?branch=main#faea5e2406f94bc0146c55b2c668da8f921dcbc2"
+source = "git+https://github.com/jakobhellermann/bevy-inspector-egui?branch=main#4a8f3c34a0edf3acd7dd32724eb004778f471793"
 dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "bevy_animation"
-version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
-dependencies = [
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_asset 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_core 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_hierarchy 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_time 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_transform 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
 ]
 
 [[package]]
@@ -299,12 +254,12 @@ dependencies = [
 [[package]]
 name = "bevy_app"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_derive 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_derive 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "downcast-rs",
  "wasm-bindgen",
  "web-sys",
@@ -340,16 +295,16 @@ dependencies = [
 [[package]]
 name = "bevy_asset"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
  "anyhow",
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_diagnostic 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_log 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_tasks 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_diagnostic 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_log 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_tasks 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "crossbeam-channel",
  "downcast-rs",
  "fastrand",
@@ -362,21 +317,6 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
-]
-
-[[package]]
-name = "bevy_audio"
-version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
-dependencies = [
- "anyhow",
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_asset 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "parking_lot",
- "rodio",
 ]
 
 [[package]]
@@ -397,14 +337,14 @@ dependencies = [
 [[package]]
 name = "bevy_core"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_tasks 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_tasks 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "bytemuck",
 ]
 
@@ -431,17 +371,17 @@ dependencies = [
 [[package]]
 name = "bevy_core_pipeline"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_asset 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_derive 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_render 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_transform 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_asset 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_derive 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_render 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_transform 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "bitflags",
  "radsort",
  "serde",
@@ -461,9 +401,9 @@ dependencies = [
 [[package]]
 name = "bevy_derive"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_macro_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_macro_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "quote",
  "syn",
 ]
@@ -485,14 +425,14 @@ dependencies = [
 [[package]]
 name = "bevy_diagnostic"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_core 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_log 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_time 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_core 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_log 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_time 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
 ]
 
 [[package]]
@@ -518,14 +458,14 @@ dependencies = [
 [[package]]
 name = "bevy_ecs"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
  "async-channel",
- "bevy_ecs_macros 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ptr 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_tasks 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_ecs_macros 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ptr 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_tasks 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "downcast-rs",
  "event-listener",
  "fixedbitset",
@@ -549,9 +489,9 @@ dependencies = [
 [[package]]
 name = "bevy_ecs_macros"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_macro_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_macro_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "proc-macro2",
  "quote",
  "syn",
@@ -583,9 +523,9 @@ dependencies = [
 [[package]]
 name = "bevy_encase_derive"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_macro_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_macro_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "encase_derive_impl",
 ]
 
@@ -594,45 +534,32 @@ name = "bevy_framepace"
 version = "0.9.1"
 source = "git+https://github.com/aevyrie/bevy_framepace?branch=main#85fa8c9b1c92aa31b33016a602492b7b98582a85"
 dependencies = [
- "bevy 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "wasm_thread",
-]
-
-[[package]]
-name = "bevy_gilrs"
-version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
-dependencies = [
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_input 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "gilrs",
 ]
 
 [[package]]
 name = "bevy_gltf"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
  "anyhow",
  "base64",
- "bevy_animation",
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_asset 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_core 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_core_pipeline 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_hierarchy 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_log 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_pbr 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_render 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_asset 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_core 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_core_pipeline 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_hierarchy 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_log 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_pbr 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_render 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "bevy_scene",
- "bevy_tasks 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_transform 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_tasks 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_transform 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "gltf",
  "percent-encoding",
  "thiserror",
@@ -656,14 +583,14 @@ dependencies = [
 [[package]]
 name = "bevy_hierarchy"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_core 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_log 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_core 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_log 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "smallvec",
 ]
 
@@ -684,13 +611,13 @@ dependencies = [
 [[package]]
 name = "bevy_input"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "thiserror",
 ]
 
@@ -729,36 +656,32 @@ dependencies = [
 [[package]]
 name = "bevy_internal"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_animation",
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_asset 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_audio",
- "bevy_core 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_core_pipeline 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_derive 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_diagnostic 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_gilrs",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_asset 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_core 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_core_pipeline 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_derive 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_diagnostic 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "bevy_gltf",
- "bevy_hierarchy 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_input 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_log 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_pbr 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ptr 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_render 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_scene",
- "bevy_sprite 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_tasks 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_text 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_time 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_transform 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ui 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_window 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_hierarchy 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_input 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_log 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_pbr 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ptr 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_render 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_sprite 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_tasks 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_text 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_time 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_transform 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ui 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_window 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "bevy_winit",
  "ndk-glue",
 ]
@@ -782,12 +705,12 @@ dependencies = [
 [[package]]
 name = "bevy_log"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
  "android_log-sys",
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "console_error_panic_hook",
  "tracing-log",
  "tracing-subscriber",
@@ -808,7 +731,7 @@ dependencies = [
 [[package]]
 name = "bevy_macro_utils"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
  "quote",
  "syn",
@@ -828,7 +751,7 @@ dependencies = [
 [[package]]
 name = "bevy_math"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
  "glam",
  "serde",
@@ -846,7 +769,7 @@ dependencies = [
 [[package]]
 name = "bevy_mikktspace"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
  "glam",
 ]
@@ -876,19 +799,19 @@ dependencies = [
 [[package]]
 name = "bevy_pbr"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_asset 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_core_pipeline 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_derive 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_render 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_transform 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_window 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_asset 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_core_pipeline 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_derive 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_render 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_transform 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_window 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "bitflags",
  "bytemuck",
  "radsort",
@@ -899,7 +822,7 @@ name = "bevy_polyline"
 version = "0.4.0"
 source = "git+https://github.com/foresightminingsoftwarecorporation/bevy_polyline?branch=main#51f5b000f8533cae5a72e84aa834d3ddf74c42b3"
 dependencies = [
- "bevy 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "bitflags",
  "naga",
 ]
@@ -913,7 +836,7 @@ checksum = "c36f4d3af0cda50c07e2010d0351ab79594681116edd280592ca394db73ef32b"
 [[package]]
 name = "bevy_ptr"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 
 [[package]]
 name = "bevy_reflect"
@@ -938,12 +861,12 @@ dependencies = [
 [[package]]
 name = "bevy_reflect"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ptr 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect_derive 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ptr 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect_derive 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "downcast-rs",
  "erased-serde",
  "glam",
@@ -971,9 +894,9 @@ dependencies = [
 [[package]]
 name = "bevy_reflect_derive"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_macro_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_macro_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "bit-set",
  "proc-macro2",
  "quote",
@@ -1026,25 +949,25 @@ dependencies = [
 [[package]]
 name = "bevy_render"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
  "anyhow",
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_asset 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_core 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_derive 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_encase_derive 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_hierarchy 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_log 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_mikktspace 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_render_macros 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_time 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_transform 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_window 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_asset 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_core 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_derive 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_encase_derive 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_hierarchy 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_log 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_mikktspace 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_render_macros 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_time 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_transform 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_window 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "bitflags",
  "codespan-reporting",
  "downcast-rs",
@@ -1079,9 +1002,9 @@ dependencies = [
 [[package]]
 name = "bevy_render_macros"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_macro_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_macro_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "proc-macro2",
  "quote",
  "syn",
@@ -1090,18 +1013,18 @@ dependencies = [
 [[package]]
 name = "bevy_scene"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
  "anyhow",
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_asset 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_derive 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_hierarchy 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_render 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_transform 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_asset 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_derive 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_hierarchy 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_render 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_transform 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "ron",
  "serde",
  "thiserror",
@@ -1136,19 +1059,19 @@ dependencies = [
 [[package]]
 name = "bevy_sprite"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_asset 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_core_pipeline 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_derive 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_log 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_render 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_transform 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_asset 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_core_pipeline 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_derive 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_log 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_render 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_transform 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "bitflags",
  "bytemuck",
  "fixedbitset",
@@ -1175,7 +1098,7 @@ dependencies = [
 [[package]]
 name = "bevy_tasks"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
  "async-channel",
  "async-executor",
@@ -1212,20 +1135,20 @@ dependencies = [
 [[package]]
 name = "bevy_text"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
  "ab_glyph",
  "anyhow",
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_asset 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_render 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_sprite 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_transform 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_window 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_asset 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_render 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_sprite 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_transform 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_window 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "glyph_brush_layout",
  "serde",
  "thiserror",
@@ -1247,12 +1170,12 @@ dependencies = [
 [[package]]
 name = "bevy_time"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "crossbeam-channel",
 ]
 
@@ -1272,13 +1195,13 @@ dependencies = [
 [[package]]
 name = "bevy_transform"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_hierarchy 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_hierarchy 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
 ]
 
 [[package]]
@@ -1313,24 +1236,24 @@ dependencies = [
 [[package]]
 name = "bevy_ui"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_asset 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_core_pipeline 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_derive 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_hierarchy 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_input 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_log 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_render 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_sprite 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_text 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_transform 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_window 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_asset 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_core_pipeline 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_derive 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_hierarchy 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_input 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_log 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_render 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_sprite 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_text 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_transform 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_window 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "bytemuck",
  "serde",
  "smallvec",
@@ -1355,7 +1278,7 @@ dependencies = [
 [[package]]
 name = "bevy_utils"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
  "ahash 0.7.6",
  "getrandom",
@@ -1383,29 +1306,29 @@ dependencies = [
 [[package]]
 name = "bevy_window"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_input 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_reflect 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_input 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_reflect 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "raw-window-handle 0.5.0",
 ]
 
 [[package]]
 name = "bevy_winit"
 version = "0.9.0"
-source = "git+https://github.com/bevyengine/bevy?branch=main#e0c3c6d16693c86843159007b4688f1408064275"
+source = "git+https://github.com/IceSentry/bevy?branch=depth-prepass#44265300b5881c79f1e1a186eb66a5ca1c52a987"
 dependencies = [
  "approx",
- "bevy_app 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_ecs 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_input 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_math 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_utils 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
- "bevy_window 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy_app 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_ecs 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_input 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_math 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_utils 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
+ "bevy_window 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "crossbeam-channel",
  "raw-window-handle 0.5.0",
  "wasm-bindgen",
@@ -1417,28 +1340,8 @@ dependencies = [
 name = "big_space"
 version = "0.1.0"
 dependencies = [
- "bevy 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "bevy_polyline",
-]
-
-[[package]]
-name = "bindgen"
-version = "0.61.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a022e58a142a46fea340d68012b9201c094e93ec3d033a944a24f8fd4a4f09a"
-dependencies = [
- "bitflags",
- "cexpr",
- "clang-sys",
- "lazy_static",
- "lazycell",
- "peeking_take_while",
- "proc-macro2",
- "quote",
- "regex",
- "rustc-hash",
- "shlex",
- "syn",
 ]
 
 [[package]]
@@ -1514,27 +1417,15 @@ checksum = "c1db59621ec70f09c5e9b597b220c7a2b43611f4710dc03ceb8748637775692c"
 
 [[package]]
 name = "cc"
-version = "1.0.76"
+version = "1.0.77"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "76a284da2e6fe2092f2353e51713435363112dfd60030e22add80be333fb928f"
-dependencies = [
- "jobserver",
-]
+checksum = "e9f73505338f7d905b19d18738976aae232eb46b8efc15554ffc56deb5d9ebe4"
 
 [[package]]
 name = "cesu8"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6d43a04d8753f35258c91f8ec639f792891f748a1edbd759cf1dcea3382ad83c"
-
-[[package]]
-name = "cexpr"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6fac387a98bb7c37292057cffc56d62ecb629900026402633ae9160df93a8766"
-dependencies = [
- "nom",
-]
 
 [[package]]
 name = "cfg-if"
@@ -1547,17 +1438,6 @@ name = "cfg_aliases"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fd16c4719339c4530435d38e511904438d07cce7950afa3718a84ac36c10e89e"
-
-[[package]]
-name = "clang-sys"
-version = "1.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa2e27ae6ab525c3d369ded447057bca5438d86dc3a68f6faafb8269ba82ebf3"
-dependencies = [
- "glob",
- "libc",
- "libloading",
-]
 
 [[package]]
 name = "clipboard-win"
@@ -1703,51 +1583,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "coreaudio-rs"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11894b20ebfe1ff903cbdc52259693389eea03b94918a2def2c30c3bf227ad88"
-dependencies = [
- "bitflags",
- "coreaudio-sys",
-]
-
-[[package]]
-name = "coreaudio-sys"
-version = "0.2.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a9444b94b8024feecc29e01a9706c69c1e26bfee480221c90764200cfd778fb"
-dependencies = [
- "bindgen",
-]
-
-[[package]]
-name = "cpal"
-version = "0.14.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e73413ddcb69c398125f5529714492e070c64c6a090ad5b01d8c082b320a0809"
-dependencies = [
- "alsa",
- "core-foundation-sys",
- "coreaudio-rs",
- "jni 0.19.0",
- "js-sys",
- "libc",
- "mach",
- "ndk 0.7.0",
- "ndk-context",
- "nix 0.25.0",
- "oboe",
- "once_cell",
- "parking_lot",
- "stdweb",
- "thiserror",
- "wasm-bindgen",
- "web-sys",
- "windows 0.37.0",
-]
-
-[[package]]
 name = "crc32fast"
 version = "1.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1768,9 +1603,9 @@ dependencies = [
 
 [[package]]
 name = "crossbeam-utils"
-version = "0.8.12"
+version = "0.8.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "edbafec5fa1f196ca66527c1b12c2ec4745ca14b50f1ad8f9f6f720b55d11fac"
+checksum = "422f23e724af1240ec469ea1e834d87a4b59ce2efe2c6a96256b0c47e2fd86aa"
 dependencies = [
  "cfg-if",
 ]
@@ -1836,12 +1671,6 @@ dependencies = [
  "adler32",
  "byteorder",
 ]
-
-[[package]]
-name = "discard"
-version = "1.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "212d0f5754cb6769937f4501cc0e67f4f4483c8d2c3e1e922ee9edbe4ab4c7c0"
 
 [[package]]
 name = "dispatch"
@@ -1992,16 +1821,6 @@ name = "fixedbitset"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0ce7134b9999ecaf8bcd65542e436736ef32ddca1b3e06094cb6ec5755203b80"
-
-[[package]]
-name = "flate2"
-version = "1.0.24"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f82b0f4c27ad9f8bfd1f3208d882da2b09c301bc1c828fd3a00d0216d2fbbff6"
-dependencies = [
- "crc32fast",
- "miniz_oxide 0.5.4",
-]
 
 [[package]]
 name = "fnv"
@@ -2179,39 +1998,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gilrs"
-version = "0.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7d0342acdc7b591d171212e17c9350ca02383b86d5f9af33c6e3598e03a6c57e"
-dependencies = [
- "fnv",
- "gilrs-core",
- "log",
- "uuid",
- "vec_map",
-]
-
-[[package]]
-name = "gilrs-core"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e4e9fae0d270709ce2c8aacb34f2b7293d4828ce748360ec364ccb7c1585e53"
-dependencies = [
- "core-foundation",
- "io-kit-sys",
- "js-sys",
- "libc",
- "libudev-sys",
- "log",
- "nix 0.25.0",
- "uuid",
- "vec_map",
- "wasm-bindgen",
- "web-sys",
- "windows 0.43.0",
-]
-
-[[package]]
 name = "glam"
 version = "0.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2220,12 +2006,6 @@ dependencies = [
  "bytemuck",
  "serde",
 ]
-
-[[package]]
-name = "glob"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b919933a397b79c37e33b77bb2aa3dc8eb6e165ad809e58ff75bc7db2e34574"
 
 [[package]]
 name = "glow"
@@ -2414,7 +2194,7 @@ dependencies = [
  "num-iter",
  "num-rational 0.3.2",
  "num-traits",
- "png 0.16.8",
+ "png",
  "tiff",
 ]
 
@@ -2429,8 +2209,6 @@ dependencies = [
  "color_quant",
  "num-rational 0.4.1",
  "num-traits",
- "png 0.17.7",
- "scoped_threadpool",
 ]
 
 [[package]]
@@ -2482,34 +2260,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "io-kit-sys"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7789f7f3c9686f96164f5109d69152de759e76e284f736bd57661c6df5091919"
-dependencies = [
- "core-foundation-sys",
- "mach",
-]
-
-[[package]]
 name = "itoa"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4217ad341ebadf8d8e724e264f13e593e0648f5b3e94b3896a5df283be015ecc"
-
-[[package]]
-name = "jni"
-version = "0.19.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c6df18c2e3db7e453d3c6ac5b3e9d5182664d28788126d39b91f2d1e22b017ec"
-dependencies = [
- "cesu8",
- "combine",
- "jni-sys",
- "log",
- "thiserror",
- "walkdir",
-]
 
 [[package]]
 name = "jni"
@@ -2530,15 +2284,6 @@ name = "jni-sys"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8eaf4bc02d17cbdd7ff4c7438cafcdf7fb9a4613313ad11b4f8fefe7d3fa0130"
-
-[[package]]
-name = "jobserver"
-version = "0.1.25"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "068b1ee6743e4d11fb9c6a1e6064b3693a1b600e7f5f5988047d98b3dc9fb90b"
-dependencies = [
- "libc",
-]
 
 [[package]]
 name = "jpeg-decoder"
@@ -2593,23 +2338,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
-name = "lazycell"
-version = "1.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "830d08ce1d1d941e6b30645f1a0eb5643013d835ce3779a5fc208261dbe10f55"
-
-[[package]]
-name = "lewton"
-version = "0.10.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "777b48df9aaab155475a83a7df3070395ea1ac6902f5cd062b8f2b028075c030"
-dependencies = [
- "byteorder",
- "ogg",
- "tinyvec",
-]
-
-[[package]]
 name = "libc"
 version = "0.2.137"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2623,16 +2351,6 @@ checksum = "b67380fd3b2fbe7527a606e18729d21c6f3951633d0500574c4dc22d2d638b9f"
 dependencies = [
  "cfg-if",
  "winapi",
-]
-
-[[package]]
-name = "libudev-sys"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c8469b4a23b962c1396b9b451dda50ef5b283e8dd309d69033475fa9b334324"
-dependencies = [
- "libc",
- "pkg-config",
 ]
 
 [[package]]
@@ -2652,15 +2370,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "abb12e687cfb44aa40f41fc3978ef76448f9b6038cad6aef4259d3c095a2382e"
 dependencies = [
  "cfg-if",
-]
-
-[[package]]
-name = "mach"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b823e83b2affd8f40a9ee8c29dbc56404c1e34cd2710921f2801e2cf29527afa"
-dependencies = [
- "libc",
 ]
 
 [[package]]
@@ -2711,12 +2420,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "minimal-lexical"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
-
-[[package]]
 name = "miniz_oxide"
 version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2733,24 +2436,6 @@ checksum = "a92518e98c078586bc6c934028adcca4c92a53d6a958196de835170a01d84e4b"
 dependencies = [
  "adler",
  "autocfg",
-]
-
-[[package]]
-name = "miniz_oxide"
-version = "0.5.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96590ba8f175222643a85693f33d26e9c8a015f599c216509b1a6894af675d34"
-dependencies = [
- "adler",
-]
-
-[[package]]
-name = "miniz_oxide"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b275950c28b37e794e8c55d88aeb5e139d0ce23fdbbeda68f8d7174abdf9e8fa"
-dependencies = [
- "adler",
 ]
 
 [[package]]
@@ -2789,26 +2474,13 @@ dependencies = [
 
 [[package]]
 name = "ndk"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2032c77e030ddee34a6787a64166008da93f6a352b629261d0fee232b8742dd4"
-dependencies = [
- "bitflags",
- "jni-sys",
- "ndk-sys 0.3.0",
- "num_enum",
- "thiserror",
-]
-
-[[package]]
-name = "ndk"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "451422b7e4718271c8b5b3aadf5adedba43dc76312454b387e98fae0fc951aa0"
 dependencies = [
  "bitflags",
  "jni-sys",
- "ndk-sys 0.4.0",
+ "ndk-sys",
  "num_enum",
  "raw-window-handle 0.5.0",
  "thiserror",
@@ -2829,10 +2501,10 @@ dependencies = [
  "android_logger",
  "libc",
  "log",
- "ndk 0.7.0",
+ "ndk",
  "ndk-context",
  "ndk-macro",
- "ndk-sys 0.4.0",
+ "ndk-sys",
  "once_cell",
  "parking_lot",
 ]
@@ -2848,15 +2520,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "ndk-sys"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6e5a6ae77c8ee183dcbbba6150e2e6b9f3f4196a7666c02a715a95692ec1fa97"
-dependencies = [
- "jni-sys",
 ]
 
 [[package]]
@@ -2882,47 +2545,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "nix"
-version = "0.23.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9f866317acbd3a240710c63f065ffb1e4fd466259045ccb504130b7f668f35c6"
-dependencies = [
- "bitflags",
- "cc",
- "cfg-if",
- "libc",
- "memoffset",
-]
-
-[[package]]
-name = "nix"
-version = "0.25.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e322c04a9e3440c327fca7b6c8a63e6890a32fa2ad689db972425f07e0d22abb"
-dependencies = [
- "autocfg",
- "bitflags",
- "cfg-if",
- "libc",
- "memoffset",
- "pin-utils",
-]
-
-[[package]]
 name = "nohash-hasher"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2bf50223579dc7cdcfb3bfcacf7069ff68243f8c363f62ffa99cf000a6b9c451"
-
-[[package]]
-name = "nom"
-version = "7.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a8903e5a29a317527874d0402f867152a3d21c908bb0b933e416c65e301d4c36"
-dependencies = [
- "memchr",
- "minimal-lexical",
-]
 
 [[package]]
 name = "notify"
@@ -2950,17 +2576,6 @@ checksum = "77a8165726e8236064dbb45459242600304b42a5ea24ee2948e18e023bf7ba84"
 dependencies = [
  "overload",
  "winapi",
-]
-
-[[package]]
-name = "num-derive"
-version = "0.3.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "876a53fff98e03a936a674b29568b0e605f06b29372c2489ff4de23f1949743d"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -3076,38 +2691,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "oboe"
-version = "0.4.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27f63c358b4fa0fbcfefd7c8be5cfc39c08ce2389f5325687e7762a48d30a5c1"
-dependencies = [
- "jni 0.19.0",
- "ndk 0.6.0",
- "ndk-context",
- "num-derive",
- "num-traits",
- "oboe-sys",
-]
-
-[[package]]
-name = "oboe-sys"
-version = "0.4.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3370abb7372ed744232c12954d920d1a40f1c4686de9e79e800021ef492294bd"
-dependencies = [
- "cc",
-]
-
-[[package]]
-name = "ogg"
-version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6951b4e8bf21c8193da321bcce9c9dd2e13c858fe078bf9054a288b419ae5d6e"
-dependencies = [
- "byteorder",
-]
-
-[[package]]
 name = "once_cell"
 version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3158,12 +2741,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "peeking_take_while"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "19b17cddbe7ec3f8bc800887bab5e717348c95ea2ca0b1bf0837fb964dc67099"
-
-[[package]]
 name = "percent-encoding"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3183,7 +2760,7 @@ dependencies = [
 name = "pew"
 version = "0.1.0"
 dependencies = [
- "bevy 0.9.0 (git+https://github.com/bevyengine/bevy?branch=main)",
+ "bevy 0.9.0 (git+https://github.com/IceSentry/bevy?branch=depth-prepass)",
  "bevy-inspector-egui",
  "bevy_framepace",
  "big_space",
@@ -3219,18 +2796,6 @@ dependencies = [
  "crc32fast",
  "deflate",
  "miniz_oxide 0.3.7",
-]
-
-[[package]]
-name = "png"
-version = "0.17.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d708eaf860a19b19ce538740d2b4bdeeb8337fa53f7738455e706623ad5c638"
-dependencies = [
- "bitflags",
- "crc32fast",
- "flate2",
- "miniz_oxide 0.6.2",
 ]
 
 [[package]]
@@ -3397,16 +2962,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f1382d1f0a252c4bf97dc20d979a2fdd05b024acd7c2ed0f7595d7817666a157"
 
 [[package]]
-name = "rodio"
-version = "0.16.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb10b653d5ec0e9411a2e7d46e2c7f4046fd87d35b9955bd73ba4108d69072b5"
-dependencies = [
- "cpal",
- "lewton",
-]
-
-[[package]]
 name = "ron"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3424,15 +2979,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08d43f7aa6b08d49f382cde6a7982047c3426db949b1424bc4b7ec9ae12c6ce2"
 
 [[package]]
-name = "rustc_version"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "138e3e0acb6c9fb258b19b67cb8abd63c00679d2851805ea151465464fe9030a"
-dependencies = [
- "semver",
-]
-
-[[package]]
 name = "ryu"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3448,31 +2994,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "scoped_threadpool"
-version = "0.1.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d51f5df5af43ab3f1360b429fa5e0152ac5ce8c0bd6485cae490332e96846a8"
-
-[[package]]
 name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
-
-[[package]]
-name = "semver"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d7eb9ef2c18661902cc47e535f9bc51b78acd254da71d375c2f6720d9a40403"
-dependencies = [
- "semver-parser",
-]
-
-[[package]]
-name = "semver-parser"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
 name = "serde"
@@ -3506,21 +3031,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sha1"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1da05c97445caa12d05e848c4a4fcbbea29e748ac28f7e80e9b010392063770"
-dependencies = [
- "sha1_smol",
-]
-
-[[package]]
-name = "sha1_smol"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae1a47186c03a32177042e55dbc5fd5aee900b8e0069a8d70fba96a9375cd012"
-
-[[package]]
 name = "sharded-slab"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3528,12 +3038,6 @@ checksum = "900fba806f70c630b0a382d0d825e17a0f19fcd059a2ade1ff237bcddf446b31"
 dependencies = [
  "lazy_static",
 ]
-
-[[package]]
-name = "shlex"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43b2853a4d09f215c24cc5489c992ce46052d359b5109343cbafbf26bc62f8a3"
 
 [[package]]
 name = "slab"
@@ -3577,55 +3081,6 @@ name = "static_assertions"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
-
-[[package]]
-name = "stdweb"
-version = "0.4.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d022496b16281348b52d0e30ae99e01a73d737b2f45d38fed4edf79f9325a1d5"
-dependencies = [
- "discard",
- "rustc_version",
- "stdweb-derive",
- "stdweb-internal-macros",
- "stdweb-internal-runtime",
- "wasm-bindgen",
-]
-
-[[package]]
-name = "stdweb-derive"
-version = "0.5.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c87a60a40fccc84bef0652345bbbbbe20a605bf5d0ce81719fc476f5c03b50ef"
-dependencies = [
- "proc-macro2",
- "quote",
- "serde",
- "serde_derive",
- "syn",
-]
-
-[[package]]
-name = "stdweb-internal-macros"
-version = "0.2.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58fa5ff6ad0d98d1ffa8cb115892b6e69d67799f6763e162a1c9db421dc22e11"
-dependencies = [
- "base-x",
- "proc-macro2",
- "quote",
- "serde",
- "serde_derive",
- "serde_json",
- "sha1",
- "syn",
-]
-
-[[package]]
-name = "stdweb-internal-runtime"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "213701ba3370744dcd1a12960caa4843b3d68b4d1c0a5d575e0d65b2ee9d16c0"
 
 [[package]]
 name = "str-buf"
@@ -3888,12 +3343,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "830b7e5d4d90034032940e4ace0d9a9a057e7a45cd94e6c007832e39edb82f6d"
 
 [[package]]
-name = "vec_map"
-version = "0.8.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
-
-[[package]]
 name = "version_check"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4017,7 +3466,7 @@ version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2a0cc7962b5aaa0dfcebaeef0161eec6edf5f4606c12e6777fd7d392f52033a5"
 dependencies = [
- "jni 0.20.0",
+ "jni",
  "ndk-context",
  "objc",
  "raw-window-handle 0.5.0",
@@ -4174,34 +3623,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
 
 [[package]]
-name = "windows"
-version = "0.37.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "57b543186b344cc61c85b5aab0d2e3adf4e0f99bc076eff9aa5927bcc0b8a647"
-dependencies = [
- "windows_aarch64_msvc 0.37.0",
- "windows_i686_gnu 0.37.0",
- "windows_i686_msvc 0.37.0",
- "windows_x86_64_gnu 0.37.0",
- "windows_x86_64_msvc 0.37.0",
-]
-
-[[package]]
-name = "windows"
-version = "0.43.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "04662ed0e3e5630dfa9b26e4cb823b817f1a9addda855d973a9458c236556244"
-dependencies = [
- "windows_aarch64_gnullvm",
- "windows_aarch64_msvc 0.42.0",
- "windows_i686_gnu 0.42.0",
- "windows_i686_msvc 0.42.0",
- "windows_x86_64_gnu 0.42.0",
- "windows_x86_64_gnullvm",
- "windows_x86_64_msvc 0.42.0",
-]
-
-[[package]]
 name = "windows-sys"
 version = "0.36.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4243,12 +3664,6 @@ checksum = "9bb8c3fd39ade2d67e9874ac4f3db21f0d710bee00fe7cab16949ec184eeaa47"
 
 [[package]]
 name = "windows_aarch64_msvc"
-version = "0.37.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2623277cb2d1c216ba3b578c0f3cf9cdebeddb6e66b1b218bb33596ea7769c3a"
-
-[[package]]
-name = "windows_aarch64_msvc"
 version = "0.42.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dd0f252f5a35cac83d6311b2e795981f5ee6e67eb1f9a7f64eb4500fbc4dcdb4"
@@ -4258,12 +3673,6 @@ name = "windows_i686_gnu"
 version = "0.36.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "180e6ccf01daf4c426b846dfc66db1fc518f074baa793aa7d9b9aaeffad6a3b6"
-
-[[package]]
-name = "windows_i686_gnu"
-version = "0.37.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d3925fd0b0b804730d44d4b6278c50f9699703ec49bcd628020f46f4ba07d9e1"
 
 [[package]]
 name = "windows_i686_gnu"
@@ -4279,12 +3688,6 @@ checksum = "e2e7917148b2812d1eeafaeb22a97e4813dfa60a3f8f78ebe204bcc88f12f024"
 
 [[package]]
 name = "windows_i686_msvc"
-version = "0.37.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ce907ac74fe331b524c1298683efbf598bb031bc84d5e274db2083696d07c57c"
-
-[[package]]
-name = "windows_i686_msvc"
 version = "0.42.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "84c12f65daa39dd2babe6e442988fc329d6243fdce47d7d2d155b8d874862246"
@@ -4294,12 +3697,6 @@ name = "windows_x86_64_gnu"
 version = "0.36.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4dcd171b8776c41b97521e5da127a2d86ad280114807d0b2ab1e462bc764d9e1"
-
-[[package]]
-name = "windows_x86_64_gnu"
-version = "0.37.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2babfba0828f2e6b32457d5341427dcbb577ceef556273229959ac23a10af33d"
 
 [[package]]
 name = "windows_x86_64_gnu"
@@ -4318,12 +3715,6 @@ name = "windows_x86_64_msvc"
 version = "0.36.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c811ca4a8c853ef420abd8592ba53ddbbac90410fab6903b3e79972a631f7680"
-
-[[package]]
-name = "windows_x86_64_msvc"
-version = "0.37.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f4dd6dc7df2d84cf7b33822ed5b86318fb1781948e9663bacd047fc9dd52259d"
 
 [[package]]
 name = "windows_x86_64_msvc"
@@ -4346,7 +3737,7 @@ dependencies = [
  "libc",
  "log",
  "mio",
- "ndk 0.7.0",
+ "ndk",
  "ndk-glue",
  "objc",
  "once_cell",
@@ -4378,7 +3769,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6e99be55648b3ae2a52342f9a870c0e138709a3493261ce9b469afe6e4df6d8a"
 dependencies = [
  "gethostname",
- "nix 0.22.3",
+ "nix",
  "winapi",
  "winapi-wsapoll",
 ]

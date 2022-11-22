@@ -44,7 +44,7 @@ pub fn camera_controller(
         nearest_object = nearest_object.min(distance);
     }
 
-    let top_speed = nearest_object.clamp(50.0, controller.top_speed);
+    let top_speed = nearest_object.clamp(2.0, controller.top_speed);
 
     let mut target = Vec3::ZERO;
 

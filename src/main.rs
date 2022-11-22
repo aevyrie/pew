@@ -1,38 +1,65 @@
-pub mod atmosphere;
+pub mod body;
 pub mod camera;
-pub mod starfield;
+pub mod post_processing;
+pub mod sunlight;
 
-use bevy::{prelude::*, sprite::Material2dPlugin};
+use bevy::{pbr::PbrPlugin, prelude::*};
 
 use big_space::{FloatingOrigin, FloatingOriginSettings, GridCell};
+use body::Body;
 use camera::CameraController;
+use sunlight::Sunlight;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            #[cfg(not(target_arch = "wasm32"))]
-            window: WindowDescriptor {
-                cursor_visible: false,
-                cursor_grab_mode: bevy::window::CursorGrabMode::Locked,
-                mode: bevy::window::WindowMode::Fullscreen,
-                ..default()
-            },
-            ..default()
-        }))
+        .add_plugins(
+            DefaultPlugins
+                .build()
+                .disable::<TransformPlugin>()
+                .set(AssetPlugin {
+                    watch_for_changes: true,
+                    ..default()
+                })
+                .set(PbrPlugin {
+                    prepass_enabled: true,
+                })
+                .set(WindowPlugin {
+                    #[cfg(not(target_arch = "wasm32"))]
+                    window: WindowDescriptor {
+                        cursor_visible: false,
+                        cursor_grab_mode: bevy::window::CursorGrabMode::Locked,
+                        // mode: bevy::window::WindowMode::Fullscreen,
+                        ..default()
+                    },
+                    #[cfg(target_arch = "wasm32")]
+                    window: WindowDescriptor {
+                        fit_canvas_to_parent: true,
+                        ..default()
+                    },
+                    ..default()
+                }),
+        )
         .add_plugin(bevy_framepace::FramepacePlugin)
-        .add_plugin(big_space::FloatingOriginPlugin::<i128>::default())
-        .add_plugin(Material2dPlugin::<atmosphere::PostProcessingMaterial>::default())
+        .add_plugin(big_space::FloatingOriginPlugin::<i128> {
+            settings: FloatingOriginSettings::new(10_000.0, 100.0),
+            ..default()
+        })
+        .add_plugin(post_processing::PostProcessingPlugin)
+        .add_plugin(MaterialPlugin::<body::AtmosphereMaterial> {
+            prepass_enabled: true,
+            ..default()
+        })
+        .add_plugin(body::BodyPlugin)
+        .add_plugin(sunlight::SunlightPlugin)
         .add_plugin(camera::CameraControllerPlugin)
-        .add_plugin(starfield::StarfieldMaterialPlugin)
+        .add_plugin(big_space::debug::FloatingOriginDebugPlugin::<i128>::default())
         .insert_resource(Msaa {
             #[cfg(target_arch = "wasm32")]
             samples: 1,
             ..default()
         })
-        .insert_resource(FloatingOriginSettings::new(10_000.0, 100.0))
         .insert_resource(ClearColor(Color::BLACK))
         .add_startup_system(setup)
-        .add_startup_system(starfield::setup)
         .run()
 }
 
@@ -44,104 +71,74 @@ fn setup(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     // camera
-    let camera = &mut commands.spawn((
+    commands.spawn((
+        sunlight::SunlightCamera,
         Camera3dBundle {
             projection: bevy::render::camera::Projection::Perspective(PerspectiveProjection {
                 // fov: 1.5,
                 ..default()
             }),
-            transform: Transform::from_xyz(0.0, 0.0, 450.0),
+            transform: Transform::from_xyz(5.0, 5.0, 226.5),
             camera: Camera {
                 hdr: true,
                 ..default()
             },
             ..default()
         },
-        GridCell::<i128> {
-            x: 0,
-            y: 0,
-            z: 999_370,
-        },
+        UiCameraConfig { show_ui: false },
+        GridCell::<i128>::new(0, 0, 999_370),
         FloatingOrigin,
-        CameraController::new(299_792_458.0 * 5_000_000.0, 100.0),
+        CameraController::new(299_792_458.0 * 50_000_000.0, 100.0),
+        #[cfg(not(target_arch = "wasm32"))]
+        bevy::core_pipeline::bloom::BloomSettings {
+            intensity: 0.1,
+            ..default()
+        },
     ));
-    #[cfg(not(target_arch = "wasm32"))]
-    camera.insert(bevy::core_pipeline::bloom::BloomSettings {
-        threshold: 2.0,
-        knee: 0.1,
-        scale: 1.0,
-        intensity: 0.1,
-    });
 
     commands.spawn((
         PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
+            mesh: meshes.add(Mesh::from(shape::Cube { size: 10.0 })),
             material: materials.add(StandardMaterial {
                 base_color: Color::YELLOW,
                 ..Default::default()
             }),
-            transform: Transform::from_xyz(0.0, 0.0, 452.0),
-            ..default()
-        },
-        GridCell::<i128> {
-            x: 0,
-            y: 0,
-            z: 999_370,
-        },
-    ));
-
-    commands.spawn((
-        DirectionalLightBundle {
-            directional_light: DirectionalLight {
-                shadows_enabled: false,
+            transform: Transform {
+                translation: Vec3::new(0.0, 0.0, 220.5),
+                rotation: Quat::from_euler(EulerRot::XYZ, 0.5, 0.5, 1.0),
                 ..default()
             },
-            transform: Transform::default().looking_at(Vec3::new(0.0, 0.0, 1.0), Vec3::Y),
             ..default()
         },
+        GridCell::<i128>::new(0, 0, 999_370),
+    ));
+
+    commands.spawn((
+        SpatialBundle::default(),
+        Sunlight {
+            illuminance: 100000.0,
+            color: Color::WHITE,
+        },
+        Body {
+            radius: 250_000_000,
+        },
+        materials.add(StandardMaterial {
+            emissive: Color::rgb_linear(3.0, 2.0, 2.0),
+            base_color: Color::rgb_linear(3.0, 2.0, 2.0),
+            unlit: true,
+            ..Default::default()
+        }),
         GridCell::<i128>::default(),
     ));
 
     commands.spawn((
-        PbrBundle {
-            mesh: meshes.add(
-                shape::Icosphere {
-                    radius: 250_000_000.0,
-                    subdivisions: 16,
-                }
-                .try_into()
-                .unwrap(),
-            ),
-            material: materials.add(StandardMaterial {
-                emissive: Color::rgb_linear(16.0, 15.0, 8.0),
-                ..Default::default()
-            }),
-            ..default()
-        },
-        GridCell::<i128>::default(),
-    ));
-
-    commands.spawn((
-        PbrBundle {
-            mesh: meshes.add(
-                shape::Icosphere {
-                    radius: 6_300_000.0,
-                    subdivisions: 42,
-                }
-                .try_into()
-                .unwrap(),
-            ),
-            material: materials.add(StandardMaterial {
-                base_color: Color::MIDNIGHT_BLUE,
-                perceptual_roughness: 0.9,
-                ..Default::default()
-            }),
-            ..default()
-        },
-        GridCell::<i128> {
-            x: 0,
-            y: 0,
-            z: 1_000_000,
-        },
+        SpatialBundle::default(),
+        Body { radius: 6_300_000 },
+        materials.add(StandardMaterial {
+            base_color: Color::MIDNIGHT_BLUE,
+            perceptual_roughness: 0.9,
+            ..Default::default()
+        }),
+        GridCell::<i128>::new(0, 0, 1_000_000),
     ));
 }

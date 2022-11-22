@@ -4,47 +4,67 @@
 //! When an object exceeds its boundary,
 
 use bevy::{math::DVec3, prelude::*, transform::TransformSystem};
-use bevy_polyline::prelude::{Polyline, PolylineBundle, PolylineMaterial};
 use std::marker::PhantomData;
 
+pub mod debug;
 pub mod precision;
+
 use precision::*;
 
 #[derive(Default)]
-pub struct FloatingOriginPlugin<I: Index>(PhantomData<I>);
-impl<I: Index> Plugin for FloatingOriginPlugin<I> {
+pub struct FloatingOriginPlugin<P: GridPrecision> {
+    pub settings: FloatingOriginSettings,
+    pub phantom: PhantomData<P>,
+}
+
+impl<P: GridPrecision> Plugin for FloatingOriginPlugin<P> {
     fn build(&self, app: &mut App) {
         app.add_plugin(bevy_polyline::PolylinePlugin)
-            .init_resource::<FloatingOriginSettings>()
+            .insert_resource(self.settings.clone())
             .register_type::<Transform>()
             .register_type::<GlobalTransform>()
-            .register_type::<GridCell<I>>()
-            .add_startup_system(spawn_debug_bounds)
-            .add_system(update_debug_bounds)
+            .register_type::<GridCell<P>>()
+            .add_plugin(ValidParentCheckPlugin::<GlobalTransform>::default())
             // add transform systems to startup so the first update is "correct"
-            .add_startup_system_to_stage(StartupStage::PostStartup, update_grid_origin::<I>)
             .add_startup_system_to_stage(
                 StartupStage::PostStartup,
-                update_position_from_grid::<I>
-                    .after(update_grid_origin::<I>)
-                    .before(bevy::transform::transform_propagate_system)
-                    .label(TransformSystem::TransformPropagate),
+                recenter_transform_on_grid::<P>
+                    .label(TransformSystem::TransformPropagate)
+                    .before(update_global_from_grid::<P>),
             )
-            .add_system_to_stage(CoreStage::PostUpdate, update_grid_origin::<I>)
+            .add_startup_system_to_stage(
+                StartupStage::PostStartup,
+                update_global_from_grid::<P>
+                    .label(TransformSystem::TransformPropagate)
+                    .before(transform_propagate_system::<P>),
+            )
+            .add_startup_system_to_stage(
+                StartupStage::PostStartup,
+                transform_propagate_system::<P>.label(TransformSystem::TransformPropagate),
+            )
             .add_system_to_stage(
                 CoreStage::PostUpdate,
-                update_position_from_grid::<I>
-                    .after(update_grid_origin::<I>)
-                    .before(bevy::transform::transform_propagate_system)
-                    .label(TransformSystem::TransformPropagate),
+                recenter_transform_on_grid::<P>
+                    .label(TransformSystem::TransformPropagate)
+                    .before(update_global_from_grid::<P>),
+            )
+            .add_system_to_stage(
+                CoreStage::PostUpdate,
+                update_global_from_grid::<P>
+                    .label(TransformSystem::TransformPropagate)
+                    .before(transform_propagate_system::<P>),
+            )
+            .add_system_to_stage(
+                CoreStage::PostUpdate,
+                transform_propagate_system::<P>.label(TransformSystem::TransformPropagate),
             );
     }
 }
 
-#[derive(Reflect, Resource)]
+#[derive(Reflect, Resource, Clone)]
 pub struct FloatingOriginSettings {
-    grid_cell_edge_length: f32,
-    distance_limit: f32,
+    grid_edge_length: f32,
+    maximum_distance_from_origin: f32,
 }
 
 impl FloatingOriginSettings {
@@ -52,34 +72,42 @@ impl FloatingOriginSettings {
     ///
     /// How far past the extents of a cell an entity must travel before a grid recentering occurs.
     /// This prevents entities from rapidly switching between cells when moving along a boundary.
-    pub fn new(grid_cell_edge_length: f32, switching_threshold: f32) -> Self {
+    pub fn new(grid_edge_length: f32, switching_threshold: f32) -> Self {
         Self {
-            grid_cell_edge_length,
-            distance_limit: grid_cell_edge_length / 2.0 + switching_threshold,
+            grid_edge_length,
+            maximum_distance_from_origin: grid_edge_length / 2.0 + switching_threshold,
         }
     }
 
     /// Converts the
-    pub fn pos_double<I: Index>(&self, pos: &GridCell<I>, transform: &Transform) -> DVec3 {
+    pub fn global_pos_double<P: GridPrecision>(
+        &self,
+        pos: &GridCell<P>,
+        transform: &Transform,
+    ) -> DVec3 {
         DVec3 {
-            x: pos.x.as_f64() * self.grid_cell_edge_length as f64 + transform.translation.x as f64,
-            y: pos.y.as_f64() * self.grid_cell_edge_length as f64 + transform.translation.y as f64,
-            z: pos.z.as_f64() * self.grid_cell_edge_length as f64 + transform.translation.z as f64,
+            x: pos.x.as_f64() * self.grid_edge_length as f64 + transform.translation.x as f64,
+            y: pos.y.as_f64() * self.grid_edge_length as f64 + transform.translation.y as f64,
+            z: pos.z.as_f64() * self.grid_edge_length as f64 + transform.translation.z as f64,
         }
     }
-    pub fn pos_single<I: Index>(&self, pos: &GridCell<I>, transform: &Transform) -> Vec3 {
+    pub fn global_pos_single<P: GridPrecision>(
+        &self,
+        pos: &GridCell<P>,
+        transform: &Transform,
+    ) -> Vec3 {
         Vec3 {
-            x: pos.x.as_f64() as f32 * self.grid_cell_edge_length + transform.translation.x,
-            y: pos.y.as_f64() as f32 * self.grid_cell_edge_length + transform.translation.y,
-            z: pos.z.as_f64() as f32 * self.grid_cell_edge_length + transform.translation.z,
+            x: pos.x.as_f64() as f32 * self.grid_edge_length + transform.translation.x,
+            y: pos.y.as_f64() as f32 * self.grid_edge_length + transform.translation.y,
+            z: pos.z.as_f64() as f32 * self.grid_edge_length + transform.translation.z,
         }
     }
 
-    pub fn precise_translation<I: Index>(&self, input: DVec3) -> (GridCell<I>, Vec3) {
-        let l = self.grid_cell_edge_length as f64;
+    pub fn precise_translation<P: GridPrecision>(&self, input: DVec3) -> (GridCell<P>, Vec3) {
+        let l = self.grid_edge_length as f64;
         let DVec3 { x, y, z } = input;
 
-        if input.abs().max_element() < self.distance_limit as f64 {
+        if input.abs().max_element() < self.maximum_distance_from_origin as f64 {
             return (GridCell::default(), input.as_vec3());
         }
 
@@ -92,9 +120,9 @@ impl FloatingOriginSettings {
 
         (
             GridCell {
-                x: I::from_f64(x_r),
-                y: I::from_f64(y_r),
-                z: I::from_f64(z_r),
+                x: P::from_f64(x_r),
+                y: P::from_f64(y_r),
+                z: P::from_f64(z_r),
             },
             Vec3::new(t_x as f32, t_y as f32, t_z as f32),
         )
@@ -107,7 +135,8 @@ impl Default for FloatingOriginSettings {
     }
 }
 
-pub struct PreciseSpatialBundle<I: Index> {
+#[derive(Bundle, Default)]
+pub struct PreciseSpatialBundle<P: GridPrecision> {
     /// The visibility of the entity.
     pub visibility: Visibility,
     /// The computed visibility of the entity.
@@ -117,19 +146,24 @@ pub struct PreciseSpatialBundle<I: Index> {
     /// The global transform of the entity.
     pub global_transform: GlobalTransform,
     /// The grid position of the entity
-    pub grid_position: GridCell<I>,
+    pub grid_position: GridCell<P>,
 }
 
-/// Defines the grid cell this entity's `Transform` is relative to.
+/// Defines the grid cell this entity's [`Transform`] is relative to.
 ///
-/// `GridPosition` is generic over a few integer types to allow you to select the grid size you
-/// need. Assuming you are using a grid cell edge length of 10,000 meters, these correspond with:
+/// This component is generic over a few integer types to allow you to select the grid size you
+/// need. Assuming you are using a grid cell edge length of 10,000 meters, these correspond to a
+/// total usable volume of a cube with the following edge lengths:
 ///
 /// - i8: 2,560 km = 74% of the diameter of the Moon
 /// - i16 655,350 km = 85% of the diameter of the Moon's orbit around Earth
 /// - i32: 0.0045 light years = ~4 times the width of the solar system
 /// - i64: 19.5 million light years = ~100 times the width of the milky way galaxy
 /// - i128: 3.6e+26 light years = ~3.9e+15 times the width of the observable universe
+///
+/// where
+///
+/// `usable_edge_length = 2^(integer_bits) * grid_cell_edge_length`
 ///
 /// # Note
 ///
@@ -142,26 +176,30 @@ pub struct PreciseSpatialBundle<I: Index> {
 ///
 #[derive(Component, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Reflect)]
 #[reflect(Component, Default, PartialEq)]
-pub struct GridCell<I: Index> {
-    pub x: I,
-    pub y: I,
-    pub z: I,
+pub struct GridCell<P: GridPrecision> {
+    pub x: P,
+    pub y: P,
+    pub z: P,
 }
 
-impl<I: Index> GridCell<I> {
+impl<P: GridPrecision> GridCell<P> {
+    pub fn new(x: P, y: P, z: P) -> Self {
+        Self { x, y, z }
+    }
+
     pub const ZERO: Self = GridCell {
-        x: I::ZERO,
-        y: I::ZERO,
-        z: I::ZERO,
+        x: P::ZERO,
+        y: P::ZERO,
+        z: P::ZERO,
     };
     pub const ONE: Self = GridCell {
-        x: I::ONE,
-        y: I::ONE,
-        z: I::ONE,
+        x: P::ONE,
+        y: P::ONE,
+        z: P::ONE,
     };
 }
-impl<I: Index> std::ops::Add for GridCell<I> {
-    type Output = GridCell<I>;
+impl<P: GridPrecision> std::ops::Add for GridCell<P> {
+    type Output = GridCell<P>;
 
     fn add(self, rhs: Self) -> Self::Output {
         GridCell {
@@ -171,8 +209,8 @@ impl<I: Index> std::ops::Add for GridCell<I> {
         }
     }
 }
-impl<I: Index> std::ops::Sub for GridCell<I> {
-    type Output = GridCell<I>;
+impl<P: GridPrecision> std::ops::Sub for GridCell<P> {
+    type Output = GridCell<P>;
 
     fn sub(self, rhs: Self) -> Self::Output {
         GridCell {
@@ -182,143 +220,202 @@ impl<I: Index> std::ops::Sub for GridCell<I> {
         }
     }
 }
-impl<I: Index> std::ops::Add for &GridCell<I> {
-    type Output = GridCell<I>;
+impl<P: GridPrecision> std::ops::Add for &GridCell<P> {
+    type Output = GridCell<P>;
 
     fn add(self, rhs: Self) -> Self::Output {
         (*self).add(*rhs)
     }
 }
-impl<I: Index> std::ops::Sub for &GridCell<I> {
-    type Output = GridCell<I>;
+impl<P: GridPrecision> std::ops::Sub for &GridCell<P> {
+    type Output = GridCell<P>;
 
     fn sub(self, rhs: Self) -> Self::Output {
         (*self).sub(*rhs)
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct FloatingOrigin;
-
-#[derive(Component)]
-pub struct DebugBounds;
-
-pub fn spawn_debug_bounds(mut commands: Commands) {
-    commands.spawn(DebugBounds);
-}
-
-pub fn update_debug_bounds(
-    settings: Res<FloatingOriginSettings>,
-    debug_cube: Query<Entity, With<DebugBounds>>,
-    mut commands: Commands,
-    mut polyline_materials: ResMut<Assets<PolylineMaterial>>,
-    mut polylines: ResMut<Assets<Polyline>>,
-) {
-    if !settings.is_changed() {
-        return;
-    }
-
-    let s = settings.grid_cell_edge_length / 2.0;
-
-    /*
-        (2)-----(3)               Y
-         | \     | \              |
-         |  (1)-----(0) MAX       o---X
-         |   |   |   |             \
-    MIN (6)--|--(7)  |              Z
-           \ |     \ |
-            (5)-----(4)
-     */
-
-    let indices = vec![
-        0, 1, 1, 2, 2, 3, 3, 0, // Top ring
-        4, 5, 5, 6, 6, 7, 7, 4, // Bottom ring
-        0, 4, 8, 1, 5, 8, 2, 6, 8, 3, 7, // Verticals (8's are NaNs)
-    ];
-
-    let vertices = [
-        Vec3::new(s, s, s),
-        Vec3::new(-s, s, s),
-        Vec3::new(-s, s, -s),
-        Vec3::new(s, s, -s),
-        Vec3::new(s, -s, s),
-        Vec3::new(-s, -s, s),
-        Vec3::new(-s, -s, -s),
-        Vec3::new(s, -s, -s),
-        Vec3::NAN,
-    ];
-
-    commands.entity(debug_cube.single()).insert(PolylineBundle {
-        polyline: polylines.add(Polyline {
-            vertices: indices.iter().map(|&i| vertices[i]).collect(),
-            ..Default::default()
-        }),
-        material: polyline_materials.add(PolylineMaterial {
-            width: 3.0,
-            color: Color::rgb(1.8, 0., 0.),
-            perspective: false,
-            ..Default::default()
-        }),
-        ..Default::default()
-    });
-}
 
 /// If an entity's transform becomes larger than the specified limit, it is relocated to the next
 /// grid cell to reduce the size of the transform.
-pub fn update_grid_origin<I: Index>(
+pub fn recenter_transform_on_grid<P: GridPrecision>(
     settings: Res<FloatingOriginSettings>,
-    mut query: Query<(&mut GridCell<I>, &mut Transform), (Changed<Transform>, Without<Parent>)>,
+    mut query: Query<(&mut GridCell<P>, &mut Transform), (Changed<Transform>, Without<Parent>)>,
 ) {
-    query.par_for_each_mut(10_000, |(mut grid_pos, mut transform)| {
-        if transform.as_ref().translation.abs().max_element() > settings.distance_limit {
-            let (grid_delta, translation) =
+    query.par_for_each_mut(1024, |(mut grid_pos, mut transform)| {
+        if transform.as_ref().translation.abs().max_element()
+            > settings.maximum_distance_from_origin
+        {
+            let (grid_cell_delta, translation) =
                 settings.precise_translation(transform.as_ref().translation.as_dvec3());
-            *grid_pos = *grid_pos + grid_delta;
+            *grid_pos = *grid_pos + grid_cell_delta;
             transform.translation = translation;
         }
     });
 }
 
-pub fn update_position_from_grid<I: Index>(
-    origin_settings: Res<FloatingOriginSettings>,
-    mut origin: Query<(&GridCell<I>, Changed<GridCell<I>>), With<FloatingOrigin>>,
+pub fn update_global_from_grid<P: GridPrecision>(
+    settings: Res<FloatingOriginSettings>,
+    origin: Query<(&GridCell<P>, Changed<GridCell<P>>), With<FloatingOrigin>>,
     mut entities: ParamSet<(
         Query<
-            (&Transform, &GridCell<I>, &mut GlobalTransform),
-            Or<(Changed<Transform>, Changed<GridCell<I>>)>,
+            (&Transform, &mut GlobalTransform, &GridCell<P>),
+            Or<(Changed<GridCell<P>>, Changed<Transform>)>,
         >,
-        Query<(&Transform, &GridCell<I>, &mut GlobalTransform)>,
+        Query<(&Transform, &mut GlobalTransform, &GridCell<P>)>,
     )>,
 ) {
-    let (origin_pos, origin_grid_pos_changed) = origin.single_mut();
+    let (origin_cell, origin_grid_pos_changed) = origin.single();
 
     if origin_grid_pos_changed {
         let mut all_entities = entities.p1();
-        all_entities.par_for_each_mut(
-            10_000,
-            |(transform, entity_grid_pos, mut global_transform)| {
-                let grid_pos_delta = entity_grid_pos - origin_pos;
-                if grid_pos_delta != GridCell::ZERO {
-                    let new_transform = transform
-                        .clone()
-                        .with_translation(origin_settings.pos_single(&grid_pos_delta, transform));
-                    *global_transform = GlobalTransform::from(new_transform);
-                }
-            },
-        );
+        all_entities.par_for_each_mut(1024, |(local, global, entity_cell)| {
+            update_global_from_cell_local(&settings, entity_cell, origin_cell, local, global);
+        });
     } else {
-        let mut changed_entities = entities.p0();
-        changed_entities.par_for_each_mut(
-            10_000,
-            |(transform, entity_grid_pos, mut global_transform)| {
-                let grid_pos_delta = entity_grid_pos - origin_pos;
-                if grid_pos_delta != GridCell::ZERO {
-                    let new_transform = transform
-                        .clone()
-                        .with_translation(origin_settings.pos_single(&grid_pos_delta, transform));
-                    *global_transform = GlobalTransform::from(new_transform);
-                }
-            },
+        let mut moved_cell_entities = entities.p0();
+        moved_cell_entities.par_for_each_mut(1024, |(local, global, entity_cell)| {
+            update_global_from_cell_local(&settings, entity_cell, origin_cell, local, global);
+        });
+    }
+}
+
+fn update_global_from_cell_local<P: GridPrecision>(
+    settings: &FloatingOriginSettings,
+    entity_cell: &GridCell<P>,
+    origin_cell: &GridCell<P>,
+    local: &Transform,
+    mut global: Mut<GlobalTransform>,
+) {
+    let grid_cell_delta = entity_cell - origin_cell;
+    *global = local
+        .clone()
+        .with_translation(settings.global_pos_single(&grid_cell_delta, local))
+        .into();
+}
+
+/// Update [`GlobalTransform`] component of entities based on entity hierarchy and
+/// [`Transform`] component.
+pub fn transform_propagate_system<P: GridPrecision>(
+    mut root_query_no_grid: Query<
+        (
+            Option<(&Children, Changed<Children>)>,
+            &Transform,
+            Changed<Transform>,
+            &mut GlobalTransform,
+            Entity,
+        ),
+        (Without<GridCell<P>>, Without<Parent>),
+    >,
+    mut root_query_grid: Query<
+        (
+            Option<(&Children, Changed<Children>)>,
+            Changed<Transform>,
+            Changed<GridCell<P>>,
+            &GlobalTransform,
+            Entity,
+        ),
+        (With<GridCell<P>>, Without<Parent>),
+    >,
+    mut transform_query: Query<(
+        &Transform,
+        Changed<Transform>,
+        &mut GlobalTransform,
+        &Parent,
+    )>,
+    children_query: Query<(&Children, Changed<Children>), (With<Parent>, With<GlobalTransform>)>,
+) {
+    for (children, transform, transform_changed, mut global_transform, entity) in
+        root_query_no_grid.iter_mut()
+    {
+        let mut changed = transform_changed;
+
+        if transform_changed {
+            info!("updated");
+            *global_transform = GlobalTransform::from(*transform);
+        }
+
+        if let Some((children, changed_children)) = children {
+            // If our `Children` has changed, we need to recalculate everything below us
+            changed |= changed_children;
+            for child in children {
+                let _ = propagate_recursive(
+                    &global_transform,
+                    &mut transform_query,
+                    &children_query,
+                    *child,
+                    entity,
+                    changed,
+                );
+            }
+        }
+    }
+
+    for (children, cell_changed, transform_changed, global_transform, entity) in
+        root_query_grid.iter_mut()
+    {
+        let mut changed = transform_changed || cell_changed;
+
+        if let Some((children, changed_children)) = children {
+            // If our `Children` has changed, we need to recalculate everything below us
+            changed |= changed_children;
+            for child in children {
+                let _ = propagate_recursive(
+                    &global_transform,
+                    &mut transform_query,
+                    &children_query,
+                    *child,
+                    entity,
+                    changed,
+                );
+            }
+        }
+    }
+}
+
+fn propagate_recursive(
+    parent: &GlobalTransform,
+    transform_query: &mut Query<(
+        &Transform,
+        Changed<Transform>,
+        &mut GlobalTransform,
+        &Parent,
+    )>,
+    children_query: &Query<(&Children, Changed<Children>), (With<Parent>, With<GlobalTransform>)>,
+    entity: Entity,
+    expected_parent: Entity,
+    mut changed: bool,
+    // We use a result here to use the `?` operator. Ideally we'd use a try block instead
+) -> Result<(), ()> {
+    let global_matrix = {
+        let (transform, transform_changed, mut global_transform, child_parent) =
+            transform_query.get_mut(entity).map_err(drop)?;
+        // Note that for parallelising, this check cannot occur here, since there is an `&mut GlobalTransform` (in global_transform)
+        assert_eq!(
+            child_parent.get(), expected_parent,
+            "Malformed hierarchy. This probably means that your hierarchy has been improperly maintained, or contains a cycle"
+        );
+        changed |= transform_changed;
+        if changed {
+            *global_transform = parent.mul_transform(*transform);
+        }
+        *global_transform
+    };
+
+    let (children, changed_children) = children_query.get(entity).map_err(drop)?;
+    // If our `Children` has changed, we need to recalculate everything below us
+    changed |= changed_children;
+    for child in children {
+        let _ = propagate_recursive(
+            &global_matrix,
+            transform_query,
+            children_query,
+            *child,
+            entity,
+            changed,
         );
     }
+    Ok(())
 }

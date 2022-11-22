@@ -2,7 +2,7 @@ use std::ops::Add;
 
 use bevy::reflect::Reflect;
 
-pub trait Index:
+pub trait GridPrecision:
     Default
     + PartialEq
     + Eq
@@ -26,7 +26,7 @@ pub trait Index:
     fn from_f64(input: f64) -> Self;
 }
 
-impl Index for i8 {
+impl GridPrecision for i8 {
     const ZERO: Self = 0;
     const ONE: Self = 1;
 
@@ -48,7 +48,7 @@ impl Index for i8 {
     }
 }
 
-impl Index for i16 {
+impl GridPrecision for i16 {
     const ZERO: Self = 0;
     const ONE: Self = 1;
 
@@ -70,7 +70,7 @@ impl Index for i16 {
     }
 }
 
-impl Index for i32 {
+impl GridPrecision for i32 {
     const ZERO: Self = 0;
     const ONE: Self = 1;
 
@@ -92,7 +92,7 @@ impl Index for i32 {
     }
 }
 
-impl Index for i64 {
+impl GridPrecision for i64 {
     const ZERO: Self = 0;
     const ONE: Self = 1;
 
@@ -114,7 +114,7 @@ impl Index for i64 {
     }
 }
 
-impl Index for i128 {
+impl GridPrecision for i128 {
     const ZERO: Self = 0;
     const ONE: Self = 1;
 

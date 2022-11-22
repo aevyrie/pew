@@ -13,4 +13,5 @@ bevy_polyline = { git = "https://github.com/foresightminingsoftwarecorporation/b
 bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", default_features = false, features = [
     "bevy_render",
     "bevy_winit",
+    "x11",
 ] }
