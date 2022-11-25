@@ -115,7 +115,7 @@ impl Atmosphere {
 pub struct AtmosphereMaterial {
     #[uniform(0)]
     color: Color,
-    #[uniform(1)]
+    #[uniform(0)]
     radius: f32,
 }
 
