@@ -9,20 +9,21 @@ fn main() {
         .insert_resource(FloatingOriginSettings::new(1.0, 0.01))
         .insert_resource(ClearColor(Color::BLACK))
         .add_startup_system(setup)
-        .add_system(rotator_system)
+        .add_system(movement)
+        .add_system(rotation)
         .run()
 }
 
 #[derive(Component)]
-struct Rotator<const N: usize>;
+struct Mover<const N: usize>;
 
 /// rotates the parent, which will result in the child also rotating
-fn rotator_system(
+fn movement(
     time: Res<Time>,
     mut q: ParamSet<(
-        Query<&mut Transform, With<Rotator<1>>>,
-        Query<&mut Transform, With<Rotator<2>>>,
-        Query<&mut Transform, With<Rotator<3>>>,
+        Query<&mut Transform, With<Mover<1>>>,
+        Query<&mut Transform, With<Mover<2>>>,
+        Query<&mut Transform, With<Mover<3>>>,
     )>,
 ) {
     let delta_translation = |offset: f32| -> Vec3 {
@@ -42,6 +43,17 @@ fn rotator_system(
     q.p2().single_mut().translation += delta_translation(812.0);
 }
 
+/// this component indicates what entities should rotate
+#[derive(Component)]
+struct Rotator;
+
+/// rotates the parent, which will result in the child also rotating
+fn rotation(time: Res<Time>, mut query: Query<&mut Transform, With<Rotator>>) {
+    for mut transform in &mut query {
+        transform.rotate_x(3.0 * time.delta_seconds());
+    }
+}
+
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -53,48 +65,64 @@ fn setup(
         ..default()
     });
 
-    // cube
-    commands
-        .spawn(PbrBundle {
+    commands.spawn((
+        PbrBundle {
             mesh: cube_handle.clone(),
             material: cube_material_handle.clone(),
             transform: Transform::from_xyz(0.0, 0.0, 1.0),
             ..default()
-        })
-        .insert(GridCell::<i64>::default())
-        .insert(Rotator::<1>);
-    commands
-        .spawn(PbrBundle {
+        },
+        GridCell::<i64>::default(),
+        Mover::<1>,
+    ));
+    commands.spawn((
+        PbrBundle {
             mesh: cube_handle.clone(),
             material: cube_material_handle.clone(),
             transform: Transform::from_xyz(1.0, 0.0, 0.0),
             ..default()
-        })
-        .insert(GridCell::<i64>::default())
-        .insert(Rotator::<2>);
+        },
+        GridCell::<i64>::default(),
+        Mover::<2>,
+    ));
     commands
-        .spawn(PbrBundle {
-            mesh: cube_handle.clone(),
-            material: cube_material_handle.clone(),
-            transform: Transform::from_xyz(0.0, 1.0, 0.0),
-            ..default()
-        })
-        .insert(GridCell::<i64>::default())
-        .insert(Rotator::<3>);
+        .spawn((
+            PbrBundle {
+                mesh: cube_handle.clone(),
+                material: cube_material_handle.clone(),
+                transform: Transform::from_xyz(0.0, 1.0, 0.0),
+                ..default()
+            },
+            GridCell::<i64>::default(),
+            Rotator,
+            Mover::<3>,
+        ))
+        .with_children(|parent| {
+            parent.spawn(PbrBundle {
+                mesh: cube_handle,
+                material: cube_material_handle,
+                transform: Transform::from_xyz(0.0, 0.0, 1.0),
+                ..default()
+            });
+        });
+
     // light
-    commands
-        .spawn(PointLightBundle {
+    commands.spawn((
+        PointLightBundle {
             transform: Transform::from_xyz(4.0, 8.0, 4.0),
             ..default()
-        })
-        .insert(GridCell::<i64>::default());
+        },
+        GridCell::<i64>::default(),
+    ));
+
     // camera
-    commands
-        .spawn(Camera3dBundle {
+    commands.spawn((
+        Camera3dBundle {
             transform: Transform::from_xyz(0.0, 0.0, 8.0)
                 .looking_at(Vec3::new(0.0, 0.0, 0.0), Vec3::Y),
             ..default()
-        })
-        .insert(GridCell::<i64>::default())
-        .insert(FloatingOrigin);
+        },
+        GridCell::<i64>::default(),
+        FloatingOrigin,
+    ));
 }

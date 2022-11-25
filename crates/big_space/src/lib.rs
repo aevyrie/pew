@@ -298,6 +298,7 @@ fn update_global_from_cell_local<P: GridPrecision>(
 /// Update [`GlobalTransform`] component of entities based on entity hierarchy and
 /// [`Transform`] component.
 pub fn transform_propagate_system<P: GridPrecision>(
+    origin_moved: Query<(), (Changed<GridCell<P>>, With<FloatingOrigin>)>,
     mut root_query_no_grid: Query<
         (
             Option<(&Children, Changed<Children>)>,
@@ -326,10 +327,12 @@ pub fn transform_propagate_system<P: GridPrecision>(
     )>,
     children_query: Query<(&Children, Changed<Children>), (With<Parent>, With<GlobalTransform>)>,
 ) {
+    let origin_cell_changed = !origin_moved.is_empty();
+
     for (children, transform, transform_changed, mut global_transform, entity) in
         root_query_no_grid.iter_mut()
     {
-        let mut changed = transform_changed;
+        let mut changed = transform_changed || origin_cell_changed;
 
         if transform_changed {
             *global_transform = GlobalTransform::from(*transform);
@@ -354,7 +357,7 @@ pub fn transform_propagate_system<P: GridPrecision>(
     for (children, cell_changed, transform_changed, global_transform, entity) in
         root_query_grid.iter_mut()
     {
-        let mut changed = transform_changed || cell_changed;
+        let mut changed = transform_changed || cell_changed || origin_cell_changed;
 
         if let Some((children, changed_children)) = children {
             // If our `Children` has changed, we need to recalculate everything below us

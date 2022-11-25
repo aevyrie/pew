@@ -3,10 +3,17 @@ pub mod camera;
 pub mod post_processing;
 pub mod sunlight;
 
-use bevy::{pbr::PbrPlugin, prelude::*};
+use bevy::{
+    pbr::{
+        wireframe::{WireframeConfig, WireframePlugin},
+        PbrPlugin,
+    },
+    prelude::*,
+    render::settings::{WgpuFeatures, WgpuSettings},
+};
 
 use big_space::{FloatingOrigin, FloatingOriginSettings, GridCell};
-use body::Body;
+use body::{Atmosphere, Body};
 use camera::CameraController;
 use sunlight::Sunlight;
 
@@ -26,9 +33,9 @@ fn main() {
                 .set(WindowPlugin {
                     #[cfg(not(target_arch = "wasm32"))]
                     window: WindowDescriptor {
-                        cursor_visible: false,
-                        cursor_grab_mode: bevy::window::CursorGrabMode::Locked,
-                        // mode: bevy::window::WindowMode::Fullscreen,
+                        // cursor_visible: false,
+                        // cursor_grab_mode: bevy::window::CursorGrabMode::Locked,
+                        mode: bevy::window::WindowMode::Fullscreen,
                         ..default()
                     },
                     #[cfg(target_arch = "wasm32")]
@@ -39,6 +46,7 @@ fn main() {
                     ..default()
                 }),
         )
+        .add_plugin(bevy_inspector_egui::WorldInspectorPlugin::new())
         .add_plugin(bevy_framepace::FramepacePlugin)
         .add_plugin(big_space::FloatingOriginPlugin::<i128> {
             settings: FloatingOriginSettings::new(10_000.0, 100.0),
@@ -46,10 +54,6 @@ fn main() {
         })
         .add_plugin(big_space::debug::FloatingOriginDebugPlugin::<i128>::default())
         .add_plugin(post_processing::PostProcessingPlugin)
-        .add_plugin(MaterialPlugin::<body::AtmosphereMaterial> {
-            prepass_enabled: true,
-            ..default()
-        })
         .add_plugin(body::BodyPlugin)
         .add_plugin(sunlight::SunlightPlugin)
         .add_plugin(camera::CameraControllerPlugin)
@@ -63,14 +67,11 @@ fn main() {
         .run()
 }
 
-/// set up a simple scene with a "parent" cube and a "child" cube
 fn setup(
-    // settings: Res<FloatingOriginSettings>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    // camera
     commands.spawn((
         sunlight::SunlightCamera,
         Camera3dBundle {
@@ -120,7 +121,7 @@ fn setup(
             color: Color::WHITE,
         },
         Body {
-            radius: 250_000_000,
+            radius: 250_000_000f32,
         },
         materials.add(StandardMaterial {
             emissive: Color::rgb_linear(3.0, 2.0, 2.0),
@@ -133,7 +134,13 @@ fn setup(
 
     commands.spawn((
         SpatialBundle::default(),
-        Body { radius: 6_300_000 },
+        Body {
+            radius: 6_300_000f32,
+        },
+        Atmosphere {
+            color: Color::RED,
+            radius: 6_800_000f32,
+        },
         materials.add(StandardMaterial {
             base_color: Color::MIDNIGHT_BLUE,
             perceptual_roughness: 0.9,

@@ -23,9 +23,13 @@ bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", default-fe
 ] }
 big_space = { path = "./crates/big_space" }
 bevy_framepace = { git = "https://github.com/aevyrie/bevy_framepace", branch = "main" }
-bevy-inspector-egui = { git = "https://github.com/jakobhellermann/bevy-inspector-egui", branch = "main" }
+bevy-inspector-egui = { path = "./vendored/bevy-inspector-egui" }
 bytemuck = "1"
 rand = "0.8"
 
 [patch."https://github.com/bevyengine/bevy"]
 bevy = { git = "https://github.com/IceSentry/bevy", branch = "depth-prepass" }
+
+[patch.crates-io]
+bevy = { git = "https://github.com/IceSentry/bevy", branch = "depth-prepass" }
+bevy_egui = { path = "./vendored/bevy_egui" }
