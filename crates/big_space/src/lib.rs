@@ -19,8 +19,7 @@ pub struct FloatingOriginPlugin<P: GridPrecision> {
 
 impl<P: GridPrecision> Plugin for FloatingOriginPlugin<P> {
     fn build(&self, app: &mut App) {
-        app.add_plugin(bevy_polyline::PolylinePlugin)
-            .insert_resource(self.settings.clone())
+        app.insert_resource(self.settings.clone())
             .register_type::<Transform>()
             .register_type::<GlobalTransform>()
             .register_type::<GridCell<P>>()
@@ -174,7 +173,7 @@ pub struct PreciseSpatialBundle<P: GridPrecision> {
 /// type GalacticGrid = GridCell<i64>;
 /// ```
 ///
-#[derive(Component, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Reflect)]
+#[derive(Component, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash, Reflect)]
 #[reflect(Component, Default, PartialEq)]
 pub struct GridCell<P: GridPrecision> {
     pub x: P,
@@ -333,7 +332,6 @@ pub fn transform_propagate_system<P: GridPrecision>(
         let mut changed = transform_changed;
 
         if transform_changed {
-            info!("updated");
             *global_transform = GlobalTransform::from(*transform);
         }
 

@@ -44,6 +44,7 @@ fn main() {
             settings: FloatingOriginSettings::new(10_000.0, 100.0),
             ..default()
         })
+        .add_plugin(big_space::debug::FloatingOriginDebugPlugin::<i128>::default())
         .add_plugin(post_processing::PostProcessingPlugin)
         .add_plugin(MaterialPlugin::<body::AtmosphereMaterial> {
             prepass_enabled: true,
@@ -52,7 +53,6 @@ fn main() {
         .add_plugin(body::BodyPlugin)
         .add_plugin(sunlight::SunlightPlugin)
         .add_plugin(camera::CameraControllerPlugin)
-        .add_plugin(big_space::debug::FloatingOriginDebugPlugin::<i128>::default())
         .insert_resource(Msaa {
             #[cfg(target_arch = "wasm32")]
             samples: 1,

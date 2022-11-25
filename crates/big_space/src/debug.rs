@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use bevy::prelude::*;
+use bevy::{prelude::*, utils::HashMap};
 use bevy_polyline::prelude::*;
 
 use crate::{precision::GridPrecision, FloatingOrigin, FloatingOriginSettings, GridCell};
@@ -9,63 +9,89 @@ use crate::{precision::GridPrecision, FloatingOrigin, FloatingOriginSettings, Gr
 pub struct FloatingOriginDebugPlugin<P: GridPrecision>(PhantomData<P>);
 impl<P: GridPrecision> Plugin for FloatingOriginDebugPlugin<P> {
     fn build(&self, app: &mut App) {
-        app.init_resource::<DebugBoundsVertices>()
-            .add_system(update_debug_bounds::<P>)
-            .add_system(build_cube);
+        app.add_plugin(bevy_polyline::PolylinePlugin)
+            .add_system_to_stage(CoreStage::Update, build_cube)
+            .add_system_to_stage(
+                CoreStage::PostUpdate,
+                update_debug_bounds::<P>
+                    .after(crate::recenter_transform_on_grid::<P>)
+                    .before(crate::update_global_from_grid::<P>),
+            );
     }
 }
 
 #[derive(Component, Reflect)]
 pub struct DebugBounds;
 
+#[derive(Resource, Reflect)]
+pub struct CubePolyline {
+    polyline: Handle<Polyline>,
+    material: Handle<PolylineMaterial>,
+    origin_matl: Handle<PolylineMaterial>,
+}
+
 pub fn update_debug_bounds<P: GridPrecision>(
     mut commands: Commands,
-    new_grid_entities: Query<(&GridCell<P>, Option<&FloatingOrigin>), Without<DebugBounds>>,
-    debug_bounds: Query<Entity, With<DebugBounds>>,
-    vertices: Res<DebugBoundsVertices>,
-    mut polyline_materials: ResMut<Assets<PolylineMaterial>>,
-    mut polylines: ResMut<Assets<Polyline>>,
+    cube_polyline: Res<CubePolyline>,
+    occupied_cells: Query<(&GridCell<P>, Option<&FloatingOrigin>), Without<DebugBounds>>,
+    mut debug_bounds: Query<
+        (
+            &mut GridCell<P>,
+            &mut Handle<Polyline>,
+            &mut Handle<PolylineMaterial>,
+            &mut Visibility,
+        ),
+        With<DebugBounds>,
+    >,
 ) {
-    for e in &debug_bounds {
-        commands.entity(e).despawn_recursive();
+    let mut occupied_cells = HashMap::from_iter(occupied_cells.iter()).into_iter();
+
+    for (mut cell, mut polyline, mut matl, mut visibility) in &mut debug_bounds {
+        if cube_polyline.is_changed() {
+            *polyline = cube_polyline.polyline.clone();
+        }
+        if let Some((occupied_cell, has_origin)) = occupied_cells.next() {
+            visibility.is_visible = true;
+            *cell = *occupied_cell;
+            if has_origin.is_some() {
+                *matl = cube_polyline.origin_matl.clone();
+            } else {
+                *matl = cube_polyline.material.clone();
+            }
+        } else {
+            // If there are more debug bounds than occupied cells, hide the extras.
+            visibility.is_visible = false;
+        }
     }
-    for (cell, is_origin) in &new_grid_entities {
+
+    // If there are still occupied cells but no more debug bounds, we need to spawn more.
+    for (occupied_cell, has_origin) in occupied_cells {
+        let material = if has_origin.is_some() {
+            cube_polyline.origin_matl.clone()
+        } else {
+            cube_polyline.material.clone()
+        };
         commands.spawn((
-            PolylineBundle {
-                polyline: polylines.add(Polyline {
-                    vertices: vertices.0.into(),
-                    ..Default::default()
-                }),
-                material: polyline_materials.add(PolylineMaterial {
-                    width: 3.0,
-                    color: if is_origin.is_some() {
-                        Color::rgb(0.0, 0.0, 2.0)
-                    } else {
-                        Color::rgb(2.0, 0.0, 0.0)
-                    },
-                    perspective: false,
-                    ..Default::default()
-                }),
-                ..Default::default()
-            },
-            cell.to_owned(),
+            SpatialBundle::default(),
+            cube_polyline.polyline.clone(),
+            material,
+            occupied_cell.to_owned(),
             DebugBounds,
         ));
     }
 }
 
-#[derive(Resource, Default)]
-pub struct DebugBoundsVertices([Vec3; 27]);
-
 pub fn build_cube(
     settings: Res<FloatingOriginSettings>,
-    mut debug_vertices: ResMut<DebugBoundsVertices>,
+    mut commands: Commands,
+    mut polyline_materials: ResMut<Assets<PolylineMaterial>>,
+    mut polylines: ResMut<Assets<Polyline>>,
 ) {
     if !settings.is_changed() {
         return;
     }
 
-    let s = settings.grid_edge_length / 2.0;
+    let s = settings.grid_edge_length / 2.001;
 
     /*
         (2)-----(3)               Y
@@ -95,7 +121,7 @@ pub fn build_cube(
         Vec3::NAN,
     ];
 
-    debug_vertices.0 = [
+    let vertices = [
         vertices[indices[0]],
         vertices[indices[1]],
         vertices[indices[2]],
@@ -124,4 +150,29 @@ pub fn build_cube(
         vertices[indices[25]],
         vertices[indices[26]],
     ];
+
+    let polyline = polylines.add(Polyline {
+        vertices: vertices.into(),
+        ..Default::default()
+    });
+
+    let material = polyline_materials.add(PolylineMaterial {
+        width: 3.0,
+        color: Color::rgb(2.0, 0.0, 0.0),
+        perspective: false,
+        ..Default::default()
+    });
+
+    let origin_matl = polyline_materials.add(PolylineMaterial {
+        width: 3.0,
+        color: Color::rgb(0.0, 0.0, 2.0),
+        perspective: false,
+        ..Default::default()
+    });
+
+    commands.insert_resource(CubePolyline {
+        polyline,
+        material,
+        origin_matl,
+    })
 }

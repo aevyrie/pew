@@ -26,7 +26,7 @@ pub struct Sunlight {
 }
 
 pub fn spawn_sunlight(mut commands: Commands) {
-    commands.spawn((directional_light(410.0), SunlightMarker));
+    commands.spawn((directional_light(1024.0), SunlightMarker));
 }
 
 fn directional_light(size: f32) -> DirectionalLightBundle {

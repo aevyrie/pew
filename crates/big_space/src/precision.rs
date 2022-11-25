@@ -1,4 +1,4 @@
-use std::ops::Add;
+use std::{hash::Hash, ops::Add};
 
 use bevy::reflect::Reflect;
 
@@ -8,6 +8,7 @@ pub trait GridPrecision:
     + Eq
     + PartialOrd
     + Ord
+    + Hash
     + Copy
     + Clone
     + Send
