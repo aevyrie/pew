@@ -3,14 +3,7 @@ pub mod camera;
 pub mod post_processing;
 pub mod sunlight;
 
-use bevy::{
-    pbr::{
-        wireframe::{WireframeConfig, WireframePlugin},
-        PbrPlugin,
-    },
-    prelude::*,
-    render::settings::{WgpuFeatures, WgpuSettings},
-};
+use bevy::{pbr::PbrPlugin, prelude::*};
 
 use big_space::{FloatingOrigin, FloatingOriginSettings, GridCell};
 use body::{Atmosphere, Body};
@@ -52,7 +45,7 @@ fn main() {
             settings: FloatingOriginSettings::new(10_000.0, 100.0),
             ..default()
         })
-        .add_plugin(big_space::debug::FloatingOriginDebugPlugin::<i128>::default())
+        // .add_plugin(big_space::debug::FloatingOriginDebugPlugin::<i128>::default())
         .add_plugin(post_processing::PostProcessingPlugin)
         .add_plugin(body::BodyPlugin)
         .add_plugin(sunlight::SunlightPlugin)

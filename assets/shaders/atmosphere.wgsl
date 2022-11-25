@@ -17,6 +17,8 @@ fn fragment(
     #import bevy_pbr::mesh_vertex_output
 ) -> @location(0) vec4<f32> {
     let depth = prepass_depth(frag_coord, sample_index);
-    return vec4(depth, depth, depth, 0.95);
+    // make depth more visible
+    let a = 0.1;
+    return vec4(pow(depth, a), pow(depth, a), pow(depth, a), 1.0);
     // return  material.color;
 }
