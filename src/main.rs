@@ -28,7 +28,7 @@ fn main() {
                     window: WindowDescriptor {
                         // cursor_visible: false,
                         // cursor_grab_mode: bevy::window::CursorGrabMode::Locked,
-                        mode: bevy::window::WindowMode::Fullscreen,
+                        // mode: bevy::window::WindowMode::Fullscreen,
                         ..default()
                     },
                     #[cfg(target_arch = "wasm32")]
@@ -83,11 +83,11 @@ fn setup(
         GridCell::<i128>::new(0, 0, 999_370),
         FloatingOrigin,
         CameraController::new(299_792_458.0 * 50_000_000.0, 100.0),
-        #[cfg(not(target_arch = "wasm32"))]
-        bevy::core_pipeline::bloom::BloomSettings {
-            intensity: 0.1,
-            ..default()
-        },
+        // #[cfg(not(target_arch = "wasm32"))]
+        // bevy::core_pipeline::bloom::BloomSettings {
+        //     intensity: 0.1,
+        //     ..default()
+        // },
     ));
 
     commands.spawn((
