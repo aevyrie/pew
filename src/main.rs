@@ -69,7 +69,7 @@ fn setup(
         sunlight::SunlightCamera,
         Camera3dBundle {
             projection: bevy::render::camera::Projection::Perspective(PerspectiveProjection {
-                // fov: 1.5,
+                fov: 1.5,
                 ..default()
             }),
             transform: Transform::from_xyz(5.0, 5.0, 226.5),
@@ -83,11 +83,11 @@ fn setup(
         GridCell::<i128>::new(0, 0, 999_370),
         FloatingOrigin,
         CameraController::new(299_792_458.0 * 50_000_000.0, 100.0),
-        // #[cfg(not(target_arch = "wasm32"))]
-        // bevy::core_pipeline::bloom::BloomSettings {
-        //     intensity: 0.1,
-        //     ..default()
-        // },
+        #[cfg(not(target_arch = "wasm32"))]
+        bevy::core_pipeline::bloom::BloomSettings {
+            intensity: 0.05,
+            ..default()
+        },
     ));
 
     commands.spawn((
@@ -117,8 +117,8 @@ fn setup(
             radius: 250_000_000f32,
         },
         materials.add(StandardMaterial {
-            emissive: Color::rgb_linear(3.0, 2.0, 2.0),
-            base_color: Color::rgb_linear(3.0, 2.0, 2.0),
+            emissive: Color::rgb_linear(5.0, 5.0, 5.0),
+            base_color: Color::rgb_linear(5.0, 5.0, 5.0),
             unlit: true,
             ..Default::default()
         }),
@@ -131,12 +131,17 @@ fn setup(
             radius: 6_300_000f32,
         },
         Atmosphere {
-            color: Color::RED,
-            radius: 6_800_000f32,
+            sun_dir: -Vec3::Z,
+            surface_radius: 6_300_000f32,
+            radius: 6_400_000f32,
+            gravity: 9.81,
+            surface_temperature: 288.15,
+            surface_pressure: 101.325,
+            molar_mass: 0.02896,
         },
         materials.add(StandardMaterial {
-            base_color: Color::MIDNIGHT_BLUE,
-            perceptual_roughness: 0.9,
+            base_color: Color::BLACK,
+            perceptual_roughness: 1.0,
             ..Default::default()
         }),
         GridCell::<i128>::new(0, 0, 1_000_000),

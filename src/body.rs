@@ -13,7 +13,8 @@ impl Plugin for BodyPlugin {
                 prepass_enabled: true,
                 ..default()
             })
-            .add_system(Atmosphere::update);
+            .add_system(Atmosphere::update)
+            .register_type::<Atmosphere>();
     }
 }
 
@@ -60,10 +61,16 @@ impl Body {
     }
 }
 
-#[derive(Component, Reflect)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component, Default)]
 pub struct Atmosphere {
-    pub color: Color,
-    pub radius: f32,
+    pub sun_dir: Vec3,
+    pub surface_radius: f32,      // m
+    pub radius: f32,              // m
+    pub gravity: f32,             // m/s^2
+    pub surface_temperature: f32, // K
+    pub surface_pressure: f32,    // kPa
+    pub molar_mass: f32,          // kg/mol
 }
 
 impl Atmosphere {
@@ -114,16 +121,31 @@ impl Atmosphere {
 #[uuid = "cf29696f-7fb3-45ff-afea-43541fdf0ac3"]
 pub struct AtmosphereMaterial {
     #[uniform(0)]
-    color: Color,
+    sun_dir: Vec3,
     #[uniform(0)]
-    radius: f32,
+    surface_radius: f32, // m
+    #[uniform(0)]
+    radius: f32, // m
+    #[uniform(0)]
+    gravity: f32, // m/s^2
+    #[uniform(0)]
+    surface_temperature: f32, // K
+    #[uniform(0)]
+    surface_pressure: f32, // kPa
+    #[uniform(0)]
+    molar_mass: f32, // kg/mol
 }
 
 impl From<Atmosphere> for AtmosphereMaterial {
     fn from(a: Atmosphere) -> Self {
         AtmosphereMaterial {
-            color: a.color,
+            sun_dir: a.sun_dir,
+            surface_radius: a.surface_radius,
             radius: a.radius,
+            gravity: a.gravity,
+            surface_temperature: a.surface_temperature,
+            surface_pressure: a.surface_pressure,
+            molar_mass: a.molar_mass,
         }
     }
 }
@@ -131,8 +153,13 @@ impl From<Atmosphere> for AtmosphereMaterial {
 impl From<&Atmosphere> for AtmosphereMaterial {
     fn from(a: &Atmosphere) -> Self {
         AtmosphereMaterial {
-            color: a.color,
+            sun_dir: a.sun_dir,
+            surface_radius: a.surface_radius,
             radius: a.radius,
+            gravity: a.gravity,
+            surface_temperature: a.surface_temperature,
+            surface_pressure: a.surface_pressure,
+            molar_mass: a.molar_mass,
         }
     }
 }
